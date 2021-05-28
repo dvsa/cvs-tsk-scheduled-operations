@@ -1,8 +1,12 @@
 functions:
-- cleanupVisits:
-    path: /cleanupVisits
-    function: cleanupVisits
-    eventName: 'cleanup'
+  - cleanupVisits:
+      path: /cleanupVisits
+      function: cleanupVisits
+      eventName: "cleanup"
+  - bulkUpdate:
+      path: /bulkUpdateDynamoDbEntries
+      function: bulkUpdate
+      eventName: "bulkUpdate"
 
 serverless:
   basePath: /${BRANCH}
