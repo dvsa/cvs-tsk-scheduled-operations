@@ -28,9 +28,9 @@ const handler: Handler = async (event: any, context: Context, callback: Callback
   const functions: IFunctionEvent[] = config.getFunctions();
   // const serverlessConfig: any = config.getConfig().serverless;
 
-  let matchingLambdaEvents: IFunctionEvent[] = functions.filter((fn) => {
+  const matchingLambdaEvents: IFunctionEvent[] = functions.filter((fn) => {
       // Find λ with matching event name
-      return fn.eventName == event.details.eventName
+      return fn.eventName === event.details.eventName
     });
 
   // Exactly one λ should match the above filtering.
@@ -64,4 +64,3 @@ const handler: Handler = async (event: any, context: Context, callback: Callback
 };
 
 export { handler };
-
