@@ -18,10 +18,12 @@ class BulkUpdateService {
             results = await this.dynamo.scan({TableName:tableName, ExclusiveStartKey: exclusiveStartKey}).promise()
 
             if(results.Items) {
+                console.log(`results items length: ${results.Items.length}`)
                 fullResults = fullResults.concat(results.Items)
             }
 
             if(results.LastEvaluatedKey) {
+                console.log(`Getting more results`)
                 cont = true
                 exclusiveStartKey = results.LastEvaluatedKey
             } else {

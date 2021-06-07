@@ -16,10 +16,13 @@ export const bulkUpdate = async() => {
         throw new Error('AWS_REGION environment variable is missing. This should be set as a default by AWS')
     }
 
+    console.log(`Have branch ${branch} and region ${region}`)
+
     const dynamo = new DynamoDB({region});
     const bulkUpdateService = new BulkUpdateService(dynamo)
 
     try {
+        console.log(`Scanning all tech records`)
         await bulkUpdateService.scanAll(`cvs-${branch}-technical-records`);
 
         return new HTTPResponse(201, HTTPRESPONSE.SUCCESS);
