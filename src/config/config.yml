@@ -6,7 +6,7 @@ functions:
   - bulkUpdate:
       path: /bulkUpdateDynamoDbEntries
       function: bulkUpdate
-      eventName: "bulkUpdate"
+      eventName: "bulk-update"
 
 serverless:
   basePath: /${BRANCH}

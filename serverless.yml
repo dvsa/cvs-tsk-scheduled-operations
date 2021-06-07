@@ -33,3 +33,15 @@ functions:
             detail:
               task:
                 - "cleanup"
+  bulkUpdate:
+    handler: src/handler.handler
+    events:
+      - cloudwatchEvent:
+          event:
+            source:
+              - "aws.events"
+            detail-type:
+              - "Scheduled Event"
+            detail:
+              task:
+                - "bulk-update"
