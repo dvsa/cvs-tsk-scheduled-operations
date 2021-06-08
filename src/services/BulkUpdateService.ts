@@ -19,6 +19,8 @@ class BulkUpdateService {
 
             if(results.Items) {
                 console.log(`results items length: ${results.Items.length}`)
+                const firstItem = results.Items[0]
+                console.log(firstItem)
                 fullResults = fullResults.concat(results.Items)
             }
 
