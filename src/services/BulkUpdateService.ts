@@ -76,7 +76,12 @@ class BulkUpdateService {
                     return Promise.resolve('')
                 })
 
-                await Promise.all(promises)
+                try {
+                    await Promise.all(promises)
+                } catch(e) {
+                    console.error(e)
+                    throw e
+                }
             }
 
             if(results.LastEvaluatedKey) {
