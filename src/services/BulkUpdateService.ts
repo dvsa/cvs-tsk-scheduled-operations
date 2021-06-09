@@ -79,7 +79,10 @@ class BulkUpdateService {
                 })
 
                 try {
-                    await Promise.all(promises)
+                    const promiseOutputs = await Promise.all(promises)
+
+                    console.log(`${promiseOutputs.length} promises processed`)
+                    console.log(promiseOutputs[0])
                 } catch(e) {
                     console.error(e)
                     throw e
