@@ -54,7 +54,7 @@ class BulkUpdateService {
 
                 try {
                     const promises = results.Items.map((item,i):Promise<string|PromiseResult<DynamoDB.UpdateItemOutput, AWSError>> => {
-                        if (item.techRecord?.L && item.techRecord?.L.length > 0 && item.techRecord?.L[0].M?.lastUpdatedAt.S) {
+                        if (item.techRecord?.L && item.techRecord?.L.length > 0 && item.techRecord?.L[0].M?.lastUpdatedAt?.S) {
                             const date = this.parseDate(item.techRecord.L[0].M.lastUpdatedAt.S)
                             const updatedDate = this.addAMillisecond(date)
                             item.techRecord.L[0].M.lastUpdatedAt.S = this.formatDate(updatedDate)
