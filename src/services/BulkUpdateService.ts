@@ -52,7 +52,10 @@ class BulkUpdateService {
                 console.log(`results items length: ${results.Items.length}`)
                 fullResults.concat(results.Items)
 
-                const promises = results.Items.map((item):Promise<string|PromiseResult<DynamoDB.UpdateItemOutput, AWSError>> => {
+                const promises = results.Items.map((item,i):Promise<string|PromiseResult<DynamoDB.UpdateItemOutput, AWSError>> => {
+                    if(i === 0){
+                        console.log(item.techRecord)
+                    }
                     if (item.techRecord && item.techRecord.L && item.techRecord.L?.length > 0 && item.techRecord.L[0].M) {
                         const date = this.parseDate(item.techRecord.L[0].M.lastUpdatedAt.toString())
                         const updatedDate = this.addAMillisecond(date)
