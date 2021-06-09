@@ -52,39 +52,39 @@ class BulkUpdateService {
                 console.log(`results items length: ${results.Items.length}`)
                 fullResults.concat(results.Items)
 
-                const promises = results.Items.map((item,i):Promise<string|PromiseResult<DynamoDB.UpdateItemOutput, AWSError>> => {
-                    if (item.techRecord?.L && item.techRecord?.L.length > 0 && item.techRecord?.L[0].M?.lastUpdatedAt.S) {
-                        const date = this.parseDate(item.techRecord.L[0].M.lastUpdatedAt.S)
-                        const updatedDate = this.addAMillisecond(date)
-                        item.techRecord.L[0].M.lastUpdatedAt.S = this.formatDate(updatedDate)
-
-                        const key = {
-                            systemNumber: item.systemNumber,
-                            vin: item.vin
-                        }
-                        if (i === 0) {
-                            console.log(`System number: ${key.systemNumber}, vin: ${key.vin}`)
-                        }
-                        return this.dynamo.updateItem(
-                            {
-                                TableName: tableName,
-                                Key:key,
-                                UpdateExpression:'SET techRecord = :tr',
-                                ExpressionAttributeValues: {':tr': item.techRecord}
-                            }
-                        ).promise()
-                    }
-
-                    return Promise.resolve('')
-                })
-
                 try {
+                    const promises = results.Items.map((item,i):Promise<string|PromiseResult<DynamoDB.UpdateItemOutput, AWSError>> => {
+                        if (item.techRecord?.L && item.techRecord?.L.length > 0 && item.techRecord?.L[0].M?.lastUpdatedAt.S) {
+                            const date = this.parseDate(item.techRecord.L[0].M.lastUpdatedAt.S)
+                            const updatedDate = this.addAMillisecond(date)
+                            item.techRecord.L[0].M.lastUpdatedAt.S = this.formatDate(updatedDate)
+
+                            const key = {
+                                systemNumber: item.systemNumber,
+                                vin: item.vin
+                            }
+                            if (i === 0) {
+                                console.log(`System number: ${key.systemNumber}, vin: ${key.vin}`)
+                            }
+                            return this.dynamo.updateItem(
+                                {
+                                    TableName: tableName,
+                                    Key:key,
+                                    UpdateExpression:'SET techRecord = :tr',
+                                    ExpressionAttributeValues: {':tr': item.techRecord}
+                                }
+                            ).promise()
+                        }
+
+                        return Promise.resolve('')
+                    })
+
                     const promiseOutputs = await Promise.all(promises)
 
                     console.log(`${promiseOutputs.length} promises processed`)
                     console.log(promiseOutputs[0])
                 } catch(e) {
-                    console.error(e)
+                    console.log(e)
                     throw e
                 }
             }
