@@ -64,8 +64,8 @@ class BulkUpdateService {
                             console.log(`New date: ${item.techRecord.L[0].M.lastUpdatedAt.S}`)
                         }
                         const key = {
-                            systemNumber: item.systemNumber.S as AttributeValue,
-                            vin: item.vin.S as AttributeValue
+                            systemNumber: item.systemNumber,
+                            vin: item.vin
                         }
                         if (i === 0) {
                             console.log(`Key: ${key}`)
