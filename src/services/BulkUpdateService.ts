@@ -53,19 +53,23 @@ class BulkUpdateService {
                 fullResults.concat(results.Items)
 
                 const promises = results.Items.map((item,i):Promise<string|PromiseResult<DynamoDB.UpdateItemOutput, AWSError>> => {
-                    if (item.techRecord && item.techRecord.L && item.techRecord.L?.length > 0 && item.techRecord.L[0].M) {
-                        if(i === 0){
-                            console.log(item.techRecord.L[0].M)
+                    if (item.techRecord?.L && item.techRecord?.L.length > 0 && item.techRecord?.L[0].M?.lastUpdatedAt.S) {
+                        if (i === 0) {
+                            console.log(`Date: ${item.techRecord.L[0].M.lastUpdatedAt.S}`)
                         }
-                        const date = this.parseDate(item.techRecord.L[0].M.lastUpdatedAt.toString())
+                        const date = this.parseDate(item.techRecord.L[0].M.lastUpdatedAt.S)
                         const updatedDate = this.addAMillisecond(date)
-                        item.techRecord.L[0].M.lastUpdatedAt = this.formatDate(updatedDate) as AttributeValue
-
+                        item.techRecord.L[0].M.lastUpdatedAt.S = this.formatDate(updatedDate)
+                        if (i === 0) {
+                            console.log(`New date: ${item.techRecord.L[0].M.lastUpdatedAt.S}`)
+                        }
                         const key = {
                             systemNumber: item.systemNumber.S as AttributeValue,
                             vin: item.vin.S as AttributeValue
                         }
-
+                        if (i === 0) {
+                            console.log(`Key: ${key}`)
+                        }
                         return this.dynamo.updateItem(
                             {
                                 TableName: tableName,

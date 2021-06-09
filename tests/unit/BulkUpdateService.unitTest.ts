@@ -31,7 +31,7 @@ describe('Bulk Update Service', () => {
                                     L: [
                                         {
                                             M: {
-                                                lastUpdatedAt: '2020-01-01T13:00:01.123Z'
+                                                lastUpdatedAt: {S:'2020-01-01T13:00:01.123Z'}
                                             }
                                         }
                                     ]
@@ -51,7 +51,7 @@ describe('Bulk Update Service', () => {
         const techRecord = updateItemFirstArgument.ExpressionAttributeValues[':tr']
 
         expect(updateItem).toBeCalledTimes(1)
-        expect(techRecord.L[0].M.lastUpdatedAt).toEqual('2020-01-01T13:00:01.124Z')
+        expect(techRecord.L[0].M.lastUpdatedAt.S).toEqual('2020-01-01T13:00:01.124Z')
     });
 
     it("returns the expected items for a paged list", async () => {
@@ -71,7 +71,7 @@ describe('Bulk Update Service', () => {
                                     L: [
                                         {
                                             M: {
-                                                lastUpdatedAt: '2020-01-01T13:00:01.123Z'
+                                                lastUpdatedAt: {S:'2020-01-01T13:00:01.123Z'}
                                             }
                                         }
                                     ]
@@ -93,7 +93,7 @@ describe('Bulk Update Service', () => {
                                     L: [
                                         {
                                             M: {
-                                                lastUpdatedAt: '2020-01-01T13:00:01.154Z'
+                                                lastUpdatedAt: {S:'2020-01-01T13:00:01.154Z'}
                                             }
                                         }
                                     ]
@@ -114,7 +114,7 @@ describe('Bulk Update Service', () => {
                                     L: [
                                         {
                                             M: {
-                                                lastUpdatedAt: '2020-01-01T13:00:01.167Z'
+                                                lastUpdatedAt: {S:'2020-01-01T13:00:01.167Z'}
                                             }
                                         }
                                     ]
