@@ -5,13 +5,13 @@ const wrapLambdaResponse = (payload: any) => {
   Object.assign(response, {
     data: {
       StatusCode: 200,
-      Payload: payload
-    }
+      Payload: payload,
+    },
   });
   return {
     $response: response,
     StatusCode: 200,
-    Payload: payload
+    Payload: payload,
   };
 };
 
@@ -20,13 +20,13 @@ const wrapLambdaErrorResponse = (code: number, payload: any) => {
   Object.assign(response, {
     data: {
       StatusCode: code,
-      Payload: payload
-    }
+      Payload: payload,
+    },
   });
   return {
     $response: response,
     StatusCode: code,
-    Payload: payload
+    Payload: payload,
   };
 };
 

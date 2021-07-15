@@ -21,4 +21,3 @@ export default class DateMock {
     global.Date = DateMock.realDate;
   };
 }
-
