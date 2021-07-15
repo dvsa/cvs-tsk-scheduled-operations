@@ -1,7 +1,13 @@
 # cvs-tsk-scheduled-operations
-A service for running tasks which need to happen periodically, triggered by Cloudwatch Events, rather than user operations.  
+
+## Introduction
+
+A service for running tasks which need to happen periodically, triggered by Cloudwatch Events, rather than user operations.
+
+////////
 
 #### Run AWS Lambda node functions locally
+
 - `npm install`
 - `BRANCH=local npm start`
 
@@ -30,12 +36,16 @@ https://github.com/UKHomeOffice/repo-security-scanner
 These will be run as part of prepush so please make sure you set up the git hook above so you don't accidentally introduce any new security vulnerabilities.
 
 ### Testing
+
 In order to test, you need to run the following:
+
 - `npm run test` for unit tests
 - `npm run test-i` for integration tests
 
 ### SonarQube
+
 In order to generate SonarQube reports on local, follow the steps:
+
 - Download SonarQube server -> https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-7.6.zip
 - Download SonarQube scanner -> https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.3.0.1492-macosx.zip
 - Add sonar-scanner in environment variables -> In .brash_profile add the line "export PATH=<PATH_TO_SONAR_SCANNER>/sonar-scanner-3.3.0.1492-macosx/bin:$PATH"
@@ -49,6 +59,7 @@ In order to generate SonarQube reports on local, follow the steps:
 ### Local Running
 
 To run this locally, add the following environment variables to your run configuration(s):
-* AWS_XRAY_CONTEXT_MISSING = LOG_ERROR
-* SLS_DEBUG = *
-* BRANCH = LOCAL
+
+- AWS_XRAY_CONTEXT_MISSING = LOG_ERROR
+- SLS_DEBUG = \*
+- BRANCH = LOCAL

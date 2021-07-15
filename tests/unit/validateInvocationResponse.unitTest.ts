@@ -1,4 +1,4 @@
-import {validateInvocationResponse} from "../../src/utils/validateInvocationResponse";
+import { validateInvocationResponse } from "../../src/utils/validateInvocationResponse";
 import HTTPError from "../../src/models/HTTPError";
 
 describe("validateInvocationResponse function", () => {
@@ -6,10 +6,10 @@ describe("validateInvocationResponse function", () => {
     it("should throw an error with the error code", () => {
       expect.assertions(1);
       try {
-        validateInvocationResponse({StatusCode: 222})
+        validateInvocationResponse({ StatusCode: 222 });
       } catch (error) {
         expect(error.statusCode).toEqual(222);
       }
-    })
-  })
-})
+    });
+  });
+});

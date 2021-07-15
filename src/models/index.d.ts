@@ -1,4 +1,4 @@
-import {Handler} from "aws-lambda";
+import { Handler } from "aws-lambda";
 
 interface IActivityParams {
   fromStartTime: string;
@@ -73,13 +73,13 @@ interface IFunctionEvent {
   event?: {
     details: {
       eventName: string;
-    }
+    };
   };
 }
 
 interface IInvokeConfig {
-  params: { apiVersion: string; endpoint?: string; };
-  functions: { testResults: { name: string }, activities: { name: string } };
+  params: { apiVersion: string; endpoint?: string };
+  functions: { testResults: { name: string }; activities: { name: string } };
 }
 
 interface INotifyConfig {
@@ -88,7 +88,7 @@ interface INotifyConfig {
 
 interface ISecretConfig {
   notify: {
-    api_key: string
+    api_key: string;
   };
 }
 
@@ -103,7 +103,7 @@ interface IIndexInvokeConfig {
 interface IConfig {
   notify: INotifyConfig;
   invoke: IIndexInvokeConfig;
-  functions: any
+  functions: any;
 }
 
 export interface ISubSeg {
@@ -111,5 +111,13 @@ export interface ISubSeg {
   close: () => void;
 }
 
-
-export { IActivityParams, IActivity, IInvokeConfig, IFunctionEvent, INotifyConfig, ISecretConfig, ITesterDetails, IConfig };
+export {
+  IActivityParams,
+  IActivity,
+  IInvokeConfig,
+  IFunctionEvent,
+  INotifyConfig,
+  ISecretConfig,
+  ITesterDetails,
+  IConfig,
+};

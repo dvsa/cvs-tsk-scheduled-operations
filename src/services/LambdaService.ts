@@ -23,8 +23,9 @@ export class LambdaService {
    * Invokes a lambda function based on the given parameters
    * @param params - InvocationRequest params
    */
-  public async invoke(params: Lambda.Types.InvocationRequest): Promise<PromiseResult<Lambda.Types.InvocationResponse, AWSError>> {
-    return this.lambdaClient.invoke(params)
-      .promise();
+  public async invoke(
+    params: Lambda.Types.InvocationRequest
+  ): Promise<PromiseResult<Lambda.Types.InvocationResponse, AWSError>> {
+    return this.lambdaClient.invoke(params).promise();
   }
 }
