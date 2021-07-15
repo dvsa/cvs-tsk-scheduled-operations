@@ -183,7 +183,7 @@ describe("Activity Helper functions", () => {
       it("should return an empty array", () => {
         // @ts-ignore
         const output: ITesterDetails[] = getTesterDetailsFromActivities(
-          undefined,
+          undefined as any,
           ["not present"]
         );
         expect(output).toHaveLength(0);
