@@ -1,7 +1,7 @@
 // @ts-ignore
 import { NotifyClient } from "notifications-node-client";
-import {TEMPLATE_IDS} from "../utils/Enums";
-import {ITesterDetails} from "../models";
+import { TEMPLATE_IDS } from "../utils/Enums";
+import { ITesterDetails } from "../models";
 import HTTPError from "../models/HTTPError";
 
 /**
@@ -21,7 +21,10 @@ class NotificationService {
   public sendVisitExpiryNotifications(userDetails: ITesterDetails[]) {
     const sendEmailPromise = [];
     for (const detail of userDetails) {
-      const sendEmail = this.notifyClient.sendEmail(TEMPLATE_IDS.TESTER_VISIT_EXPIRY, detail.email);
+      const sendEmail = this.notifyClient.sendEmail(
+        TEMPLATE_IDS.TESTER_VISIT_EXPIRY,
+        detail.email
+      );
       sendEmailPromise.push(sendEmail);
     }
 
@@ -29,7 +32,8 @@ class NotificationService {
       .then((response: any) => {
         console.log("Response from Notify Client: ", response);
         return response;
-      }).catch((error) => {
+      })
+      .catch((error) => {
         console.error(error);
         throw new HTTPError(error.statusCode, error.message);
       });

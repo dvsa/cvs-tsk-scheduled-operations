@@ -1,8 +1,8 @@
-import {ActivityService} from "../../src/services/ActivityService";
-import {LambdaService} from "../../src/services/LambdaService";
+import { ActivityService } from "../../src/services/ActivityService";
+import { LambdaService } from "../../src/services/LambdaService";
 import HTTPError from "../../src/models/HTTPError";
-import {wrapLambdaResponse} from "../util/responseUtils";
-import activitiesResponse from "../resources/activities-response.json"
+import { wrapLambdaResponse } from "../util/responseUtils";
+import activitiesResponse from "../resources/activities-response.json";
 import testActivities from "../resources/testActivities.json";
 import dateMock from "../util/dateMockUtils";
 
@@ -22,17 +22,21 @@ describe("Activity Service", () => {
     });
   });
 
-  describe("getRecentActivities",  () => {
+  describe("getRecentActivities", () => {
     it("is invoking getActivities with correct param", async () => {
       // Param  should be TIMES.TERMINATION_TIME+1 before "now"
-      dateMock.setupDateMock('2019-05-14T11:01:58.135Z');
-      const expectedTime = '2019-05-14T05:01:58.135Z';
+      dateMock.setupDateMock("2019-05-14T11:01:58.135Z");
+      const expectedTime = "2019-05-14T05:01:58.135Z";
       const getActivitiesMock = jest.fn();
-      jest.spyOn(ActivityService.prototype,"getActivities").mockImplementation(getActivitiesMock);
+      jest
+        .spyOn(ActivityService.prototype, "getActivities")
+        .mockImplementation(getActivitiesMock);
 
       const svc = new ActivityService(null as unknown as LambdaService);
       await svc.getRecentActivities();
-      expect(getActivitiesMock.mock.calls[0][0]).toEqual({fromStartTime: expectedTime});
+      expect(getActivitiesMock.mock.calls[0][0]).toEqual({
+        fromStartTime: expectedTime,
+      });
 
       dateMock.restoreDateMock();
     });
@@ -44,19 +48,24 @@ describe("Activity Service", () => {
       jest.resetModuleRegistry();
     });
 
-
     context("when no data is returned from database", () => {
       it("should return an empty array, and no error", async () => {
-        const invokeMock = jest.fn().mockResolvedValue(wrapLambdaResponse(JSON.stringify({
-          body: "No resources match the search criteria",
-          statusCode: 404
-        })));
-        const lambdaSvcMock = jest.fn().mockImplementation(() => {return {invoke: invokeMock}}) ;
+        const invokeMock = jest.fn().mockResolvedValue(
+          wrapLambdaResponse(
+            JSON.stringify({
+              body: "No resources match the search criteria",
+              statusCode: 404,
+            })
+          )
+        );
+        const lambdaSvcMock = jest.fn().mockImplementation(() => {
+          return { invoke: invokeMock };
+        });
         const svc = new ActivityService(new lambdaSvcMock());
 
         expect.assertions(1);
 
-        const output = await svc.getActivities({fromStartTime: "2020-02-12"});
+        const output = await svc.getActivities({ fromStartTime: "2020-02-12" });
         expect(output).toEqual([]);
       });
     });
@@ -65,11 +74,16 @@ describe("Activity Service", () => {
       it("returns parsed result", async () => {
         const mockLambdaService = jest.fn().mockImplementation(() => {
           return {
-            invoke: () => Promise.resolve(wrapLambdaResponse(JSON.stringify(activitiesResponse))),
+            invoke: () =>
+              Promise.resolve(
+                wrapLambdaResponse(JSON.stringify(activitiesResponse))
+              ),
           };
         });
         const activityService = new ActivityService(new mockLambdaService());
-        const result = await activityService.getActivities({fromStartTime: "2020-02-12"});
+        const result = await activityService.getActivities({
+          fromStartTime: "2020-02-12",
+        });
         expect(result).toEqual(JSON.parse(activitiesResponse.body));
       });
     });
@@ -81,15 +95,16 @@ describe("Activity Service", () => {
       jest.resetModuleRegistry();
     });
 
-
     describe("when the endActivity function throws an error", () => {
       it("endActivities should throw that error upward", async () => {
-        jest.spyOn(ActivityService.prototype, "endActivity").mockRejectedValue(new HTTPError(418, "bad things"));
+        jest
+          .spyOn(ActivityService.prototype, "endActivity")
+          .mockRejectedValue(new HTTPError(418, "bad things"));
         const lambdaSvcMock = jest.fn();
         const svc = new ActivityService(new lambdaSvcMock());
         expect.assertions(2);
         try {
-          await svc.endActivities([testActivities[0]])
+          await svc.endActivities([testActivities[0]]);
         } catch (e) {
           expect(e.statusCode).toEqual(418);
           expect(e.body).toEqual("bad things");
@@ -99,14 +114,16 @@ describe("Activity Service", () => {
 
     describe("when no errors are thrown by endActivity service calls", () => {
       it("returns array of results", async () => {
-        jest.spyOn(ActivityService.prototype, "endActivity").mockResolvedValue("looks good");
+        jest
+          .spyOn(ActivityService.prototype, "endActivity")
+          .mockResolvedValue("looks good");
         const lambdaSvcMock = jest.fn();
         const svc = new ActivityService(new lambdaSvcMock());
         expect.assertions(2);
 
         const output: any[] = await svc.endActivities(testActivities);
         expect(output).toHaveLength(testActivities.length);
-        expect(output.every(i => i === "looks good")).toBeTruthy();
+        expect(output.every((i) => i === "looks good")).toBeTruthy();
       });
     });
   });
