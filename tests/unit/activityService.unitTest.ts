@@ -1,4 +1,7 @@
-import { ActivityService } from "../../src/services/ActivityService";
+import {
+  ActivityService,
+  ActivityType,
+} from "../../src/services/ActivityService";
 import { LambdaService } from "../../src/services/LambdaService";
 import HTTPError from "../../src/models/HTTPError";
 import { wrapLambdaResponse } from "../util/responseUtils";
@@ -25,7 +28,8 @@ describe("Activity Service", () => {
   describe("getRecentActivities", () => {
     it("is invoking getActivities with correct param", async () => {
       // Param  should be TIMES.TERMINATION_TIME+1 before "now"
-      dateMock.setupDateMock("2019-05-14T11:01:58.135Z");
+      const expectedToStartTime = "2019-05-14T11:01:58.135Z";
+      dateMock.setupDateMock(expectedToStartTime);
       const expectedTime = "2019-05-14T05:01:58.135Z";
       const getActivitiesMock = jest.fn();
       jest
@@ -33,9 +37,11 @@ describe("Activity Service", () => {
         .mockImplementation(getActivitiesMock);
 
       const svc = new ActivityService(null as unknown as LambdaService);
-      await svc.getRecentActivities();
+      await svc.getRecentActivities(ActivityType.VISIT);
       expect(getActivitiesMock.mock.calls[0][0]).toEqual({
         fromStartTime: expectedTime,
+        toStartTime: expectedToStartTime,
+        activityType: "visit",
       });
 
       dateMock.restoreDateMock();

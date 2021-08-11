@@ -8,6 +8,11 @@ import { IActivity, IActivityParams, IInvokeConfig } from "../models";
 import { validateInvocationResponse } from "../utils/validateInvocationResponse";
 import HTTPError from "../models/HTTPError";
 
+export enum ActivityType {
+  VISIT = "visit",
+  WAIT = "wait",
+  UNACCOUNTABLE_TIME = "unaccountable time"
+}
 class ActivityService {
   private readonly lambdaClient: LambdaService;
   private readonly config: Configuration;
@@ -17,13 +22,13 @@ class ActivityService {
     this.config = Configuration.getInstance();
   }
 
-  public async getRecentActivities(): Promise<IActivity[]> {
+  public async getRecentActivities(activityType: ActivityType): Promise<IActivity[]> {
+    const toStartTime = new Date();
     // Get unclosed Visit activities from the last period of interest
-    const params = {
-      fromStartTime: subHours(
-        new Date(),
-        TIMES.TERMINATION_TIME + TIMES.ADDITIONAL_WINDOW
-      ).toISOString(),
+    const params: IActivityParams = {
+      fromStartTime: subHours(toStartTime, TIMES.TERMINATION_TIME + TIMES.ADDITIONAL_WINDOW).toISOString(),
+      toStartTime: toStartTime.toISOString(),
+      activityType
     };
 
     return await this.getActivities(params);
