@@ -1,21 +1,31 @@
 // @ts-ignore
 import * as yml from "node-yaml";
 import { Handler } from "aws-lambda";
-import {IConfig, IFunctionEvent, IInvokeConfig, INotifyConfig, ISecretConfig} from "../models";
-import {ERRORS} from "./Enums";
-import SecretsManager, { GetSecretValueRequest, GetSecretValueResponse } from "aws-sdk/clients/secretsmanager";
+import {
+  IConfig,
+  IFunctionEvent,
+  IInvokeConfig,
+  INotifyConfig,
+  ISecretConfig,
+} from "../models";
+import { ERRORS } from "./Enums";
+import SecretsManager, {
+  GetSecretValueRequest,
+  GetSecretValueResponse,
+} from "aws-sdk/clients/secretsmanager";
 import { safeLoad } from "js-yaml";
 import * as AWSXray from "aws-xray-sdk";
 
 class Configuration {
-
   private static instance: Configuration;
   private readonly config: IConfig;
   private secretsClient: SecretsManager;
 
   private constructor(configPath: string) {
     // @ts-ignore
-    this.secretsClient = AWSXray.captureAWSClient(new SecretsManager({ region: "eu-west-1" }));
+    this.secretsClient = AWSXray.captureAWSClient(
+      new SecretsManager({ region: "eu-west-1" })
+    );
     this.config = yml.readSync(configPath);
     // Replace environment variable references
     let stringifiedConfig: string = JSON.stringify(this.config);
@@ -25,10 +35,15 @@ class Configuration {
     if (matches) {
       matches.forEach((match: string) => {
         envRegex.lastIndex = 0;
-        const captureGroups: RegExpExecArray = envRegex.exec(match) as RegExpExecArray;
+        const captureGroups: RegExpExecArray = envRegex.exec(
+          match
+        ) as RegExpExecArray;
 
         // Insert the environment variable if available. If not, insert placeholder. If no placeholder, leave it as is.
-        stringifiedConfig = stringifiedConfig.replace(match, (process.env[captureGroups[1]] || captureGroups[2] || captureGroups[1]));
+        stringifiedConfig = stringifiedConfig.replace(
+          match,
+          process.env[captureGroups[1]] || captureGroups[2] || captureGroups[1]
+        );
       });
     }
 
@@ -71,7 +86,7 @@ class Configuration {
         name,
         function: require(`../functions/${name}`)[name],
         eventName: params.eventName,
-        event: params.event
+        event: params.event,
       };
     });
   }
@@ -101,7 +116,10 @@ class Configuration {
     }
 
     // Not defining BRANCH will default to local
-    const env: string = (!process.env.BRANCH || process.env.BRANCH === "local") ? "local" : "remote";
+    const env: string =
+      !process.env.BRANCH || process.env.BRANCH === "local"
+        ? "local"
+        : "remote";
 
     return this.config.invoke[env];
   }
@@ -113,9 +131,11 @@ class Configuration {
     let secret: ISecretConfig;
     if (process.env.SECRET_NAME) {
       const req: GetSecretValueRequest = {
-        SecretId: process.env.SECRET_NAME
+        SecretId: process.env.SECRET_NAME,
       };
-      const resp: GetSecretValueResponse = await this.secretsClient.getSecretValue(req).promise();
+      const resp: GetSecretValueResponse = await this.secretsClient
+        .getSecretValue(req)
+        .promise();
       try {
         secret = await safeLoad(resp.SecretString as string);
       } catch (e) {

@@ -3,7 +3,7 @@ import { IInvokeConfig } from "../../src/models";
 import SecretsManager from "aws-sdk/clients/secretsmanager";
 
 import mockConfig from "../util/mockConfig";
-import {ERRORS} from "../../src/utils/Enums";
+import { ERRORS } from "../../src/utils/Enums";
 jest.mock("aws-sdk/clients/secretsmanager");
 
 describe("ConfigurationUtil", () => {
@@ -28,7 +28,9 @@ describe("ConfigurationUtil", () => {
       process.env.BRANCH = "";
       const invokeConfigInstance: IInvokeConfig = config.getInvokeConfig();
       expect(invokeConfigInstance.params.endpoint).not.toEqual(undefined);
-      expect(invokeConfigInstance.params.endpoint).toEqual("http://localhost:3013");
+      expect(invokeConfigInstance.params.endpoint).toEqual(
+        "http://localhost:3013"
+      );
     });
   });
   describe("when calling getInvokeConfig() and the BRANCH environment variable is local", () => {
@@ -36,7 +38,9 @@ describe("ConfigurationUtil", () => {
       process.env.BRANCH = "local";
       const invokeConfigInstance: IInvokeConfig = config.getInvokeConfig();
       expect(invokeConfigInstance.params.endpoint).not.toEqual(undefined);
-      expect(invokeConfigInstance.params.endpoint).toEqual("http://localhost:3013");
+      expect(invokeConfigInstance.params.endpoint).toEqual(
+        "http://localhost:3013"
+      );
     });
   });
 
@@ -62,22 +66,24 @@ describe("ConfigurationUtil", () => {
           process.env.SECRET_NAME = "aSecret";
           const secretMock = jest.fn().mockImplementation(() => {
             return {
-              getSecretValue: getSecretMock
-            }
+              getSecretValue: getSecretMock,
+            };
           });
           // @ts-ignore
           const getSecretMock = jest.fn().mockImplementation(() => {
             return {
-              promise: jest.fn().mockResolvedValue({SecretString: "{\"notify\": {\"api_key\": \"something\"}}"})
-            }
+              promise: jest.fn().mockResolvedValue({
+                SecretString: '{"notify": {"api_key": "something"}}',
+              }),
+            };
           });
           (config as any).secretsClient = new secretMock();
           const output = await (config as any).setSecrets();
           expect(getSecretMock.mock.calls[0][0].SecretId).toEqual("aSecret");
           expect(output).toEqual({
-            "notify": {
-              "api_key": "something"
-            }
+            notify: {
+              api_key: "something",
+            },
           });
         });
       });
@@ -87,14 +93,14 @@ describe("ConfigurationUtil", () => {
           process.env.SECRET_NAME = "aSecret";
           const secretMock = jest.fn().mockImplementation(() => {
             return {
-              getSecretValue: getSecretMock
-            }
+              getSecretValue: getSecretMock,
+            };
           });
           // @ts-ignore
           const getSecretMock = jest.fn().mockImplementation(() => {
             return {
-              promise: jest.fn().mockResolvedValue(undefined)
-            }
+              promise: jest.fn().mockResolvedValue(undefined),
+            };
           });
           (config as any).secretsClient = new secretMock();
           try {
@@ -131,7 +137,7 @@ describe("ConfigurationUtil", () => {
       });
       describe("when api_key is already defined", () => {
         it("should return the notify config", async () => {
-          const notifyConf = {api_key: "something"};
+          const notifyConf = { api_key: "something" };
           (config as any).config.notify = notifyConf;
           const output = await config.getNotifyConfig();
           expect(output).toEqual(notifyConf);
