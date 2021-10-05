@@ -8,6 +8,11 @@ import { IActivity, IActivityParams, IInvokeConfig } from "../models";
 import { validateInvocationResponse } from "../utils/validateInvocationResponse";
 import HTTPError from "../models/HTTPError";
 
+export enum ActivityType {
+  VISIT = "visit",
+  WAIT = "wait",
+  UNACCOUNTABLE_TIME = "unaccountable time",
+}
 class ActivityService {
   private readonly lambdaClient: LambdaService;
   private readonly config: Configuration;
@@ -17,13 +22,18 @@ class ActivityService {
     this.config = Configuration.getInstance();
   }
 
-  public async getRecentActivities(): Promise<IActivity[]> {
+  public async getRecentActivities(
+    activityType: ActivityType
+  ): Promise<IActivity[]> {
+    const toStartTime = new Date();
     // Get unclosed Visit activities from the last period of interest
-    const params = {
+    const params: IActivityParams = {
       fromStartTime: subHours(
-        new Date(),
+        toStartTime,
         TIMES.TERMINATION_TIME + TIMES.ADDITIONAL_WINDOW
       ).toISOString(),
+      toStartTime: toStartTime.toISOString(),
+      activityType,
     };
 
     return await this.getActivities(params);
@@ -45,26 +55,20 @@ class ActivityService {
         queryStringParameters: params,
       }),
     };
-    return (await this.lambdaClient
-      .invoke(invokeParams)
-      .then(
-        (
-          response: PromiseResult<Lambda.Types.InvocationResponse, AWSError>
-        ) => {
-          let payload: any;
-          try {
-            payload = validateInvocationResponse(response); // Response validation
-          } catch (e) {
-            if (e.statusCode === 404) {
-              return [];
-            }
-            console.log(ERRORS.GET_ACIVITY_FAILURE, e);
-            throw new HTTPError(500, ERRORS.GET_ACIVITY_FAILURE);
-          }
-          const activityResults: any[] = JSON.parse(payload.body); // Response conversion
-          return activityResults;
-        }
-      )) as IActivity[];
+    const response = await this.lambdaClient.invoke(invokeParams);
+    let payload: any;
+    try {
+      payload = validateInvocationResponse(response); // Response validation
+      console.log("payload from cleanup", payload);
+    } catch (e) {
+      if (e.statusCode === 404) {
+        return [];
+      }
+      console.log(ERRORS.GET_ACIVITY_FAILURE, e);
+      throw new HTTPError(500, ERRORS.GET_ACIVITY_FAILURE);
+    }
+    const activityResults: any[] = JSON.parse(payload.body); // Response conversion
+    return activityResults;
   }
 
   public async endActivities(activities: IActivity[]): Promise<any[]> {

@@ -1,5 +1,5 @@
-import { LambdaService } from "./LambdaService";
-import { ActivityService } from "./ActivityService";
+import {LambdaService} from "./LambdaService";
+import {ActivityService, ActivityType} from "./ActivityService";
 import Lambda = require("aws-sdk/clients/lambda");
 import { TestResultsService } from "./TestResultsService";
 import {
@@ -33,17 +33,22 @@ export class CleanupService {
    *
    */
   public async cleanupVisits(): Promise<any> {
-    // Get all activities from last period of interest
-    console.log("Getting activities");
-    const allActivities: IActivity[] =
-      await this.activityService.getRecentActivities();
-    console.log("Got Activities: ", allActivities);
-    // Get stale open visits
-    const openVisits: IActivity[] = getStaleOpenVisits(allActivities);
-    console.log("Open Visits: ", openVisits);
-    if (openVisits.length === 0) {
-      return new HTTPResponse(200, HTTPRESPONSE.NOTHING_TO_DO);
-    }
+      // Get all activities from last period of interest
+      console.log("Getting activities");
+      const visitActivities: IActivity[] = await this.activityService.getRecentActivities(ActivityType.VISIT);
+
+      const waitActivities: IActivity[] = await this.activityService.getRecentActivities(ActivityType.WAIT);
+
+      const unaccountableActivities: IActivity[] = await this.activityService.getRecentActivities(ActivityType.UNACCOUNTABLE_TIME);
+
+      const allActivities: IActivity[] = visitActivities.concat(waitActivities,unaccountableActivities);
+      console.log("Got Activities: ", allActivities);
+      // Get stale open visits
+      const openVisits: IActivity[] = getStaleOpenVisits(allActivities);
+      console.log("Open Visits: ", openVisits);
+      if(openVisits.length === 0) {
+        return new HTTPResponse(200, HTTPRESPONSE.NOTHING_TO_DO);
+      }
 
     // Get list of staffIDs from open visits
     const openVisitStaffIds: string[] = getTesterStaffIds(openVisits);

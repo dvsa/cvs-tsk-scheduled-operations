@@ -95,7 +95,7 @@ describe("Cleanup Service", () => {
       const svc = new CleanupService(new notifySvcMock());
       await svc.cleanupVisits();
       expect(sendNotifyMock.mock.calls[0][0]).toHaveLength(0);
-      expect(endActivitiesMock.mock.calls[0][0]).toHaveLength(1);
+      expect(endActivitiesMock.mock.calls[0][0]).toHaveLength(3);
     });
   });
 });

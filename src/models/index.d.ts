@@ -4,7 +4,7 @@ interface IActivityParams {
   fromStartTime: string;
   toStartTime?: string;
   activityType?: string;
-  testStationsPNumber?: string;
+  testStationPNumber?: string;
   testerStaffId?: string;
   endTimeNull?: boolean;
 }
