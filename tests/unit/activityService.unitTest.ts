@@ -30,7 +30,7 @@ describe("Activity Service", () => {
       // Param  should be TIMES.TERMINATION_TIME+1 before "now"
       const expectedToStartTime = "2019-05-14T11:01:58.135Z";
       dateMock.setupDateMock(expectedToStartTime);
-      const expectedTime = "2019-05-14T05:01:58.135Z";
+      const expectedTime = "2019-05-13T17:01:58.135Z";
       const getActivitiesMock = jest.fn();
       jest
         .spyOn(ActivityService.prototype, "getActivities")

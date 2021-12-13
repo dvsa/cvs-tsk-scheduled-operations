@@ -30,7 +30,7 @@ class ActivityService {
     const params: IActivityParams = {
       fromStartTime: subHours(
         toStartTime,
-        TIMES.TERMINATION_TIME + TIMES.ADDITIONAL_WINDOW
+        TIMES.RETRIEVAL_TIME + TIMES.ADDITIONAL_WINDOW
       ).toISOString(),
       toStartTime: toStartTime.toISOString(),
       activityType,
