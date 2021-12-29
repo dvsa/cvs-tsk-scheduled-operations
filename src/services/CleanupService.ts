@@ -55,7 +55,7 @@ export class CleanupService {
     console.log("Open Visit Staff Ids", openVisitStaffIds);
     // Get last activity for each staffId
     const mostRecentActivities: Map<string, IActivity> =
-      getMostRecentActivityByTesterStaffId(visitActivities, openVisitStaffIds);
+      getMostRecentActivityByTesterStaffId(allActivities, openVisitStaffIds);
     console.log("Most Recent Activities by Staff Id", mostRecentActivities);
     // Get all Test Results By Staff Id for open visits
     console.log("Getting Test Results");
