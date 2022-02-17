@@ -1,15 +1,10 @@
-import { APIGatewayProxyResult, Callback, Context, Handler } from "aws-lambda";
-import Path from "path-parser";
-import { Configuration } from "./utils/Configuration";
-import HTTPResponse from "./models/HTTPResponse";
-import { IFunctionEvent } from "./models";
-import { HTTPRESPONSE } from "./utils/Enums";
+import { APIGatewayProxyResult, Callback, Context, Handler } from 'aws-lambda';
+import { Configuration } from './utils/Configuration';
+import HTTPResponse from './models/HTTPResponse';
+import { IFunctionEvent } from './models';
+import { HTTPRESPONSE } from './utils/Enums';
 
-const handler: Handler = async (
-  event: any,
-  context: Context,
-  callback: Callback
-): Promise<APIGatewayProxyResult> => {
+const handler: Handler = async (event: any, context: Context, callback: Callback): Promise<APIGatewayProxyResult> => {
   // Request integrity checks
   if (!event) {
     console.error();
@@ -30,6 +25,7 @@ const handler: Handler = async (
   // Finding an appropriate λ matching the request
   const config: Configuration = Configuration.getInstance();
   const functions: IFunctionEvent[] = config.getFunctions();
+  console.log(functions);
   // const serverlessConfig: any = config.getConfig().serverless;
 
   const matchingLambdaEvents: IFunctionEvent[] = functions.filter((fn) => {
@@ -48,9 +44,9 @@ const handler: Handler = async (
     return lambdaFn(event, context, callback) as Promise<APIGatewayProxyResult>;
   }
   if (matchingLambdaEvents.length > 1) {
-    console.error(`Error: More than one function identified for route ${
-      event.httpMethod
-    } ${event.path} matched ${matchingLambdaEvents.map((lambda) => lambda.name)}
+    console.error(`Error: More than one function identified for route ${event.httpMethod} ${
+      event.path
+    } matched ${matchingLambdaEvents.map((lambda) => lambda.name)}
     Dumping event:
     ${JSON.stringify(event)}
     Dumping context:

@@ -1,4 +1,4 @@
-import { Handler } from "aws-lambda";
+import { Handler } from 'aws-lambda';
 
 interface IActivityParams {
   fromStartTime: string;
@@ -7,6 +7,7 @@ interface IActivityParams {
   testStationPNumber?: string;
   testerStaffId?: string;
   endTimeNull?: boolean;
+  isOpen?: boolean;
 }
 
 interface IActivity {
@@ -107,6 +108,17 @@ interface IConfig {
   functions: any;
 }
 
+interface ILogVisit {
+  visitId: string;
+  testerStaffId: string;
+  visitStartTime: string;
+  lastActionTime: string;
+  action: string;
+  reason: string;
+  status: string;
+  message?: string;
+}
+
 export interface ISubSeg {
   addError(error: any): void;
   close: () => void;
@@ -121,4 +133,5 @@ export {
   ISecretConfig,
   ITesterDetails,
   IConfig,
+  ILogVisit,
 };

@@ -1,18 +1,12 @@
-import { PromiseResult } from "aws-sdk/lib/request";
-import { AWSError, Lambda } from "aws-sdk";
-import { LambdaService } from "./LambdaService";
-import { Configuration } from "../utils/Configuration";
-import { subHours } from "date-fns";
-import { ERRORS, TIMES } from "../utils/Enums";
-import { IActivity, IActivityParams, IInvokeConfig } from "../models";
-import { validateInvocationResponse } from "../utils/validateInvocationResponse";
-import HTTPError from "../models/HTTPError";
+import { PromiseResult } from 'aws-sdk/lib/request';
+import { AWSError, Lambda } from 'aws-sdk';
+import { LambdaService } from './LambdaService';
+import { Configuration } from '../utils/Configuration';
+import { ACTIVITY_TYPE, ERRORS } from '../utils/Enums';
+import { IActivity, IActivityParams, IInvokeConfig } from '../models';
+import { validateInvocationResponse } from '../utils/validateInvocationResponse';
+import HTTPError from '../models/HTTPError';
 
-export enum ActivityType {
-  VISIT = "visit",
-  WAIT = "wait",
-  UNACCOUNTABLE_TIME = "unaccountable time",
-}
 class ActivityService {
   private readonly lambdaClient: LambdaService;
   private readonly config: Configuration;
@@ -22,100 +16,106 @@ class ActivityService {
     this.config = Configuration.getInstance();
   }
 
-  public async getRecentActivities(
-    activityType: ActivityType
+  /**
+   * Setup parameters to make the call to get the required type of activities
+   * @param activityType Type of activity, visit, wait or unaccountable
+   * @param visitStartTime Earliest start time of activities
+   * @param testerStaffId Tester Staff Id
+   */
+  public async getActivitiesList(
+    activityType: ACTIVITY_TYPE,
+    visitStartTime: string,
+    testerStaffId?: string,
   ): Promise<IActivity[]> {
-    const toStartTime = new Date();
-    // Get unclosed Visit activities from the last period of interest
-    const params: IActivityParams = {
-      fromStartTime: subHours(
-        toStartTime,
-        TIMES.TERMINATION_TIME + TIMES.ADDITIONAL_WINDOW
-      ).toISOString(),
-      toStartTime: toStartTime.toISOString(),
-      activityType,
-    };
+    const defaultStartTime: string = new Date(2020, 0, 1).toISOString();
+    const today: string = new Date().toISOString();
+    let params: IActivityParams;
 
-    return await this.getActivities(params);
+    // Get all open visits, from 2020-01-01
+    if (activityType === ACTIVITY_TYPE.VISIT) {
+      params = {
+        fromStartTime: defaultStartTime,
+        toStartTime: today,
+        activityType,
+        isOpen: true,
+      };
+    } else {
+      // Get wait or unaccountable times, from the visit start time, for the given tester staff id
+      params = {
+        fromStartTime: visitStartTime,
+        toStartTime: today,
+        activityType,
+        isOpen: false,
+        testerStaffId,
+      };
+    }
+    return this.getActivities(params);
   }
 
   /**
-   * Retrieves Activities based on the provided parameters
+   * Invoke the Activities service endpoint to get records based on the provided parameters
    * @param params - getActivities query parameters
    */
   public async getActivities(params: IActivityParams): Promise<IActivity[]> {
     const config: IInvokeConfig = this.config.getInvokeConfig();
     const invokeParams: any = {
       FunctionName: config.functions.activities.name,
-      InvocationType: "RequestResponse",
-      LogType: "Tail",
+      InvocationType: 'RequestResponse',
+      LogType: 'Tail',
       Payload: JSON.stringify({
-        httpMethod: "GET",
-        path: "/activities/cleanup",
+        httpMethod: 'GET',
+        path: '/activities/cleanup',
         queryStringParameters: params,
       }),
     };
-    const response = await this.lambdaClient.invoke(invokeParams);
-    let payload: any;
-    try {
-      payload = validateInvocationResponse(response); // Response validation
-      console.log("payload from cleanup", payload);
-    } catch (e) {
-      if (e.statusCode === 404) {
-        return [];
-      }
-      console.log(ERRORS.GET_ACIVITY_FAILURE, e);
-      throw new HTTPError(500, ERRORS.GET_ACIVITY_FAILURE);
-    }
-    const activityResults: any[] = JSON.parse(payload.body); // Response conversion
-    return activityResults;
-  }
 
-  public async endActivities(activities: IActivity[]): Promise<any[]> {
-    const promises: Promise<any>[] = [];
-    activities.forEach((activity: IActivity) => {
-      promises.push(this.endActivity(activity.id));
-    });
-
-    return await Promise.all(promises);
+    return this.lambdaClient
+      .invoke(invokeParams)
+      .then((response: PromiseResult<Lambda.Types.InvocationResponse, AWSError>) => {
+        const payload: any = validateInvocationResponse(response); // Response validation
+        if (payload) {
+          console.log(`After validation - ${params.activityType}: `, payload);
+        } else {
+          params.activityType === ACTIVITY_TYPE.VISIT
+            ? console.log(`No ${params.activityType} activities returned`)
+            : console.log(
+                `No ${params.activityType} activities returned for tester staff id - ${params.testerStaffId}`,
+              );
+        }
+        return payload ? JSON.parse(payload.body) : []; // Response conversion
+      });
   }
 
   /**
-   *  Closes Activities based on the provided id
-   * @param id - the activity id
+   * Invoke the Activities service endpoint to close a visit
+   * @param activityId - the activity id
+   * @param lastActionTime - the last action time
    */
-  public async endActivity(id: string): Promise<any> {
+  public async endVisit(activityId: string, lastActionTime: string): Promise<any> {
     const config: IInvokeConfig = this.config.getInvokeConfig();
     const invokeParams: any = {
       FunctionName: config.functions.activities.name,
-      InvocationType: "RequestResponse",
-      LogType: "Tail",
+      InvocationType: 'RequestResponse',
+      LogType: 'Tail',
       Payload: JSON.stringify({
-        httpMethod: "PUT",
-        path: `/activities/${id}/end`,
+        httpMethod: 'PUT',
+        path: `/activities/${activityId}/end`,
         pathParameters: {
-          id,
+          activityId,
         },
+        body: JSON.stringify({
+          endTime: lastActionTime,
+        }),
       }),
     };
-    console.log("Ending activity: ", id);
-    return await this.lambdaClient
+    return this.lambdaClient
       .invoke(invokeParams)
-      .then(
-        (
-          response: PromiseResult<Lambda.Types.InvocationResponse, AWSError>
-        ) => {
-          const payload: any = validateInvocationResponse(response); // Response validation
-          const activityResults: any[] = JSON.parse(payload.body); // Response conversion
-          return activityResults;
-        }
-      )
-      .catch((error) => {
-        console.log(
-          `endActivity encountered a failure while ending Activity ${id}: `,
-          error
-        );
-        throw new HTTPError(500, ERRORS.END_ACIVITY_FAILURE);
+      .then((response: PromiseResult<Lambda.Types.InvocationResponse, AWSError>) => {
+        const payload: any = validateInvocationResponse(response); // Response validation
+        return JSON.parse(payload.body);
+      })
+      .catch(() => {
+        throw new HTTPError(500, ERRORS.END_ACTIVITY_FAILURE);
       });
   }
 }

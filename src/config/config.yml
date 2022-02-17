@@ -2,7 +2,7 @@ functions:
   - cleanupVisits:
       path: /cleanupVisits
       function: cleanupVisits
-      eventName: "cleanup"
+      eventName: 'cleanup'
 
 serverless:
   basePath: /${BRANCH}

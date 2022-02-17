@@ -1,12 +1,12 @@
-import { IActivity, ITesterDetails, ITestResult } from "../models";
-import { uniq, maxBy } from "lodash";
-import { TIMES } from "./Enums";
-import { subHours, isBefore, isAfter } from "date-fns";
+import { IActivity, ITesterDetails, ITestResult } from '../models';
+import { uniq, maxBy } from 'lodash';
+import { TIMES } from './Enums';
+import { subHours, isBefore, isAfter } from 'date-fns';
 
 export const getStaleOpenVisits = (openVisits: IActivity[]): IActivity[] => {
   const warningTime = subHours(new Date(), TIMES.NOTIFICATION_TIME);
   const staleVisits = openVisits
-    .filter((a) => a.activityType === "visit")
+    .filter((a) => a.activityType === 'visit')
     .filter((a) => a.endTime === null)
     .filter((a) => isBefore(new Date(a.startTime), warningTime));
   return staleVisits;
@@ -18,13 +18,13 @@ export const getTesterStaffIds = (activities: IActivity[]): string[] => {
 
 export const getMostRecentActivityByTesterStaffId = (
   activities: IActivity[],
-  staffIds: string[]
+  staffIds: string[],
 ): Map<string, IActivity> => {
   const mostRecentActivities = new Map<string, IActivity>();
   staffIds.forEach((id) => {
     const mostRecentActivity = maxBy(
       activities.filter((a) => a.testerStaffId === id),
-      getActivityDateTime
+      getActivityDateTime,
     ) as IActivity;
     mostRecentActivities.set(id, mostRecentActivity);
   });
@@ -33,14 +33,11 @@ export const getMostRecentActivityByTesterStaffId = (
 
 export const getMostRecentTestResultByTesterStaffId = (
   testResults: Map<string, ITestResult[]>,
-  staffIds: string[]
+  staffIds: string[],
 ): Map<string, ITestResult> => {
   const mostRecentTestResults = new Map<string, ITestResult>();
   staffIds.forEach((id) => {
-    const mostRecentTestResult = maxBy(
-      testResults.get(id),
-      getTestResultEndDateTime
-    ) as ITestResult;
+    const mostRecentTestResult = maxBy(testResults.get(id), getTestResultEndDateTime) as ITestResult;
     mostRecentTestResults.set(id, mostRecentTestResult);
   });
   return mostRecentTestResults;
@@ -52,25 +49,19 @@ export const getActivityDateTime = (activity: IActivity): Date => {
 };
 
 export const getTestResultEndDateTime = (testResult: ITestResult): Date => {
-  return testResult?.testEndTimestamp
-    ? new Date(testResult.testEndTimestamp)
-    : new Date(0);
+  return testResult?.testEndTimestamp ? new Date(testResult.testEndTimestamp) : new Date(0);
 };
 
 export const getLastEventTimeByTesterStaffId = (
   activities: Map<string, IActivity>,
   testResults: Map<string, ITestResult>,
-  staffIds: string[]
+  staffIds: string[],
 ): Map<string, Date> => {
   const events = new Map<string, Date>();
   staffIds.forEach((id) => {
     const activityDate = getActivityDateTime(activities.get(id) as IActivity);
-    const testResultDate = getTestResultEndDateTime(
-      testResults.get(id) as ITestResult
-    );
-    const maxDate = isAfter(activityDate, testResultDate)
-      ? activityDate
-      : testResultDate;
+    const testResultDate = getTestResultEndDateTime(testResults.get(id) as ITestResult);
+    const maxDate = isAfter(activityDate, testResultDate) ? activityDate : testResultDate;
     events.set(id, maxDate);
   });
   return events;
@@ -78,7 +69,7 @@ export const getLastEventTimeByTesterStaffId = (
 
 export const getActionableStaffIdsByTime = (
   lastActionsByStaffId: Map<string, Date>,
-  NotificationTime: number
+  NotificationTime: number,
 ): string[] => {
   const notificationThresholdTime = subHours(new Date(), NotificationTime);
   const notifiableStaffIDs: string[] = [];
@@ -90,10 +81,7 @@ export const getActionableStaffIdsByTime = (
   return notifiableStaffIDs;
 };
 
-export const removeFromMap = (
-  map: Map<string, any>,
-  removeIds: string[]
-): Map<string, any> => {
+export const removeFromMap = (map: Map<string, any>, removeIds: string[]): Map<string, any> => {
   const newMap: Map<string, any> = new Map<string, any>();
   map.forEach((val, key) => {
     if (!removeIds.includes(key)) {
@@ -103,14 +91,10 @@ export const removeFromMap = (
   return newMap;
 };
 
-export const getTesterDetailsFromActivities = (
-  activities: IActivity[],
-  staffIds: string[]
-): ITesterDetails[] => {
+export const getTesterDetailsFromActivities = (activities: IActivity[], staffIds: string[]): ITesterDetails[] => {
   const details: ITesterDetails[] = [];
   staffIds.forEach((id) => {
-    const email = activities?.filter((a) => a.testerStaffId === id)[0]
-      ?.testerEmail;
+    const email = activities?.filter((a) => a.testerStaffId === id)[0]?.testerEmail;
     if (email) {
       details.push({ email });
     }
@@ -123,11 +107,6 @@ export const getTesterDetailsFromActivities = (
  * @param openVisitList -
  * @param testerIds
  */
-export const filterActivitiesByStaffId = (
-  openVisitList: IActivity[],
-  testerIds: string[]
-) => {
-  return openVisitList.filter((visit) =>
-    testerIds.includes(visit.testerStaffId)
-  );
+export const filterActivitiesByStaffId = (openVisitList: IActivity[], testerIds: string[]) => {
+  return openVisitList.filter((visit) => testerIds.includes(visit.testerStaffId));
 };
