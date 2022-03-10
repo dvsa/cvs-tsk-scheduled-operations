@@ -100,7 +100,7 @@ class Configuration {
       throw new Error(ERRORS.NOTIFY_CONFIG_NOT_DEFINED);
     }
     if (!this.config.notify.api_key) {
-      this.config.notify = <INotifyConfig>(await this.setSecrets()).notify;
+      this.config.notify = (await this.setSecrets()).notify as INotifyConfig;
     }
 
     return this.config.notify;
