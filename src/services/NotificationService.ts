@@ -1,30 +1,30 @@
 // @ts-ignore
 import { NotifyClient } from "notifications-node-client";
-import { TEMPLATE_IDS } from "../utils/Enums";
 import { ITesterDetails } from "../models";
 import HTTPError from "../models/HTTPError";
+import { Configuration } from "../utils/Configuration";
 
 /**
  * Service class for Certificate Notifications
  */
 class NotificationService {
   private readonly notifyClient: NotifyClient;
+  private readonly config: Configuration;
 
   constructor(notifyClient: NotifyClient) {
     this.notifyClient = notifyClient;
+    this.config = Configuration.getInstance();
   }
 
   /**
    * Send multiple emails based on array of user details
    * @param userDetails
    */
-  public sendVisitExpiryNotifications(userDetails: ITesterDetails[]) {
+  public async sendVisitExpiryNotifications(userDetails: ITesterDetails[]) {
+    const templateId: string = await this.config.getTemplateIdFromEV();
     const sendEmailPromise = [];
     for (const detail of userDetails) {
-      const sendEmail = this.notifyClient.sendEmail(
-        TEMPLATE_IDS.TESTER_VISIT_EXPIRY,
-        detail.email
-      );
+      const sendEmail = this.notifyClient.sendEmail(templateId, detail.email);
       sendEmailPromise.push(sendEmail);
     }
 

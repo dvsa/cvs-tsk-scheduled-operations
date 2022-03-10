@@ -9,7 +9,7 @@ describe("CleanupVisits function", () => {
   process.env.SECRET_NAME = "something";
   jest
     .spyOn(Configuration.prototype, "getNotifyConfig")
-    .mockResolvedValue({ api_key: "something" });
+    .mockResolvedValue({ api_key: "something", templateId: "something" });
 
   it("invokes the CleanupService's cleanupVisits function", async () => {
     const svcMock = jest.fn().mockResolvedValue("");

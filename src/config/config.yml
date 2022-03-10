@@ -30,3 +30,4 @@ invoke:
         name: activities-${BRANCH}
 notify:
   api_key:
+  templateId: 306d864b-a56d-49eb-b3cc-6d23cf8bcc26

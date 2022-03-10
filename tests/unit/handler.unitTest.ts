@@ -19,7 +19,7 @@ describe("Handler", () => {
         .mockImplementation(cleanupVisits);
       jest
         .spyOn(Configuration.prototype, "getNotifyConfig")
-        .mockResolvedValue({ api_key: "something" });
+        .mockResolvedValue({ api_key: "something", templateId: "something" });
       const event = {
         details: {
           eventName: "cleanup",

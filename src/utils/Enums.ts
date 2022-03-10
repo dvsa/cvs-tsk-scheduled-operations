@@ -13,12 +13,9 @@ export enum HTTPRESPONSE {
 export enum ERRORS {
   NO_BRANCH = "'BRANCH' environment variable not found",
   NOTIFY_CONFIG_NOT_DEFINED = "The Notify config is not defined in the config file.",
+  TEMPLATE_ID_ENV_VAR_NOT_EXIST = "TEMPLATE_ID environment variable does not exist.",
   SECRET_ENV_VAR_NOT_SET = "SECRET_NAME environment variable not set.",
   SECRET_STRING_EMPTY = "SecretString is empty.",
   GET_ACIVITY_FAILURE = "Get Activities encountered errors",
   END_ACIVITY_FAILURE = "Ending activities encountered failures",
-}
-
-export enum TEMPLATE_IDS {
-  TESTER_VISIT_EXPIRY = "72eac307-d001-4b13-9fde-9f26c631da68",
 }

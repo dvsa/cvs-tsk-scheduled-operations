@@ -1,5 +1,5 @@
-import {LambdaService} from "./LambdaService";
-import {ActivityService, ActivityType} from "./ActivityService";
+import { LambdaService } from "./LambdaService";
+import { ActivityService, ActivityType } from "./ActivityService";
 import Lambda = require("aws-sdk/clients/lambda");
 import { TestResultsService } from "./TestResultsService";
 import {
