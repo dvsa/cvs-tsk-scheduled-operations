@@ -21,7 +21,7 @@ class Configuration {
   private readonly config: IConfig;
   private secretsClient: SecretsManager;
 
-  private constructor(configPath: string) {
+  constructor(configPath: string) {
     // @ts-ignore
     this.secretsClient = AWSXray.captureAWSClient(
       new SecretsManager({ region: "eu-west-1" })
@@ -125,7 +125,7 @@ class Configuration {
   }
 
   /**
-   * Retrieves the templateId from environment variable
+   * Retrieves the templateId from config file when running locally, else environment variable
    */
   public async getTemplateIdFromEV(): Promise<string> {
     if (!process.env.BRANCH || process.env.BRANCH === "local") {

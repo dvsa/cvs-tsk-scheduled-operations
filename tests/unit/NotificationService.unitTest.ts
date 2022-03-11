@@ -24,7 +24,7 @@ describe("Notification Service", () => {
         ]);
         expect(sendEmailSpy.mock.calls).toHaveLength(2);
         expect(sendEmailSpy.mock.calls[0][0]).toEqual(
-          "306d864b-a56d-49eb-b3cc-6d23cf8bcc26"
+          "2af4ff8e-af5b-4f32-80a9-d03719180647"
         );
         expect(sendEmailSpy.mock.calls[0][1]).toEqual("abc123");
       });

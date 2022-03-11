@@ -1,6 +1,5 @@
 import { Configuration } from "../../src/utils/Configuration";
 import { IInvokeConfig } from "../../src/models";
-import SecretsManager from "aws-sdk/clients/secretsmanager";
 
 import mockConfig from "../util/mockConfig";
 import { ERRORS } from "../../src/utils/Enums";
@@ -9,7 +8,9 @@ jest.mock("aws-sdk/clients/secretsmanager");
 describe("ConfigurationUtil", () => {
   mockConfig();
   const config: Configuration = Configuration.getInstance();
+  const badConfig: Configuration = new Configuration("../../tests/resources/badConfig.yml");
   const branch = process.env.BRANCH;
+  const mockError = new Error(ERRORS.TEMPLATE_ID_ENV_VAR_NOT_EXIST);
 
   afterEach(() => {
     jest.restoreAllMocks();
@@ -41,6 +42,40 @@ describe("ConfigurationUtil", () => {
       expect(invokeConfigInstance.params.endpoint).toEqual(
         "http://localhost:3013"
       );
+    });
+  });
+
+  describe("getTemplateIdFromEv", () => {
+    describe("When calling getTemplateIdFromEv and the branch is local", () => {
+      it("should not throw an error when templateId does exist", async () => {
+        process.env.BRANCH = "local";
+        await config.getTemplateIdFromEV().then((templateId) => {
+          expect(templateId).toEqual("2af4ff8e-af5b-4f32-80a9-d03719180647");
+        });
+      });
+      it("should throw an error when templateId doesn't exist in config file", async () => {
+        await badConfig.getTemplateIdFromEV().catch((error) => {
+          expect(error).toEqual(mockError);
+        });
+      });
+    });
+    describe("When calling getTemplateIdFromEv and branch isn't local", () => {
+      it("should not throw and error when templateId is populated", async () => {
+        process.env.BRANCH = "remote";
+        process.env.TEMPLATE_ID = "some_template_id";
+        await config.getTemplateIdFromEV().then((templateId) => {
+          expect(templateId).toEqual("some_template_id");
+        });
+      });
+    });
+    describe("When calling getTemplateIdFromEv and branch isn't local", () => {
+      it("should throw an error when templateId does not exist", async () => {
+        process.env.BRANCH = "remote";
+        delete process.env.TEMPLATE_ID;
+        await config.getTemplateIdFromEV().catch((error) => {
+          expect(error).toEqual(mockError);
+        });
+      });
     });
   });
 
@@ -145,5 +180,6 @@ describe("ConfigurationUtil", () => {
       });
     });
   });
+
   process.env.BRANCH = branch;
 });
