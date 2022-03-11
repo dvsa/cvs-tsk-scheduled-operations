@@ -107,7 +107,8 @@ export class CleanupService {
       await this.notificationService.sendVisitExpiryNotifications(userDetails);
       await this.activityService.endActivities(closingActivityDetails);
       return Promise.resolve();
-    } catch (e) {
+    } catch (error) {
+      console.error(error);
       return Promise.reject();
     }
   }
