@@ -84,6 +84,7 @@ interface IInvokeConfig {
 
 interface INotifyConfig {
   api_key: string;
+  templateId: string;
 }
 
 interface ISecretConfig {

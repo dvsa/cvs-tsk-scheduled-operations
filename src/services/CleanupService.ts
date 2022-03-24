@@ -1,5 +1,5 @@
-import {LambdaService} from "./LambdaService";
-import {ActivityService, ActivityType} from "./ActivityService";
+import { LambdaService } from "./LambdaService";
+import { ActivityService, ActivityType } from "./ActivityService";
 import Lambda = require("aws-sdk/clients/lambda");
 import { TestResultsService } from "./TestResultsService";
 import {
@@ -107,7 +107,8 @@ export class CleanupService {
       await this.notificationService.sendVisitExpiryNotifications(userDetails);
       await this.activityService.endActivities(closingActivityDetails);
       return Promise.resolve();
-    } catch (e) {
+    } catch (error) {
+      console.error(error);
       return Promise.reject();
     }
   }

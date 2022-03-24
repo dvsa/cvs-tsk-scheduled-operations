@@ -1,5 +1,4 @@
 import { NotificationService } from "../../src/services/NotificationService";
-import { TEMPLATE_IDS } from "../../src/utils/Enums";
 import HTTPError from "../../src/models/HTTPError";
 
 describe("Notification Service", () => {
@@ -9,7 +8,7 @@ describe("Notification Service", () => {
   });
   describe("sendVisitExpiryNotifications", () => {
     describe("when passed an array of UserDetails", () => {
-      it("invokes sendNotification once per arrayItem, with correct Params", () => {
+      it("invokes sendNotification once per arrayItem, with correct Params", async () => {
         expect.assertions(3);
         const sendEmailSpy = jest.fn().mockResolvedValue("");
         const notifSpy = jest.fn().mockImplementation(() => {
@@ -19,13 +18,13 @@ describe("Notification Service", () => {
         });
 
         const svc = new NotificationService(new notifSpy());
-        svc.sendVisitExpiryNotifications([
+        await svc.sendVisitExpiryNotifications([
           { email: "abc123" },
           { email: "bcd234" },
         ]);
         expect(sendEmailSpy.mock.calls).toHaveLength(2);
         expect(sendEmailSpy.mock.calls[0][0]).toEqual(
-          TEMPLATE_IDS.TESTER_VISIT_EXPIRY
+          "2af4ff8e-af5b-4f32-80a9-d03719180647"
         );
         expect(sendEmailSpy.mock.calls[0][1]).toEqual("abc123");
       });
