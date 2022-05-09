@@ -74,4 +74,28 @@ describe('Test Results Service', () => {
       expect(sentPayload.queryStringParameters).toEqual(customParams);
     });
   });
+
+  describe('Get Test Results', () => {
+    it('invokes the lambda client once, no test results found', async () => {
+      expect.assertions(5);
+      const resp: any = cloneDeep(trResponse);
+      resp.Payload.statusCode = 404
+      resp.Payload.body = JSON.stringify(testResults);
+      resp.Payload = JSON.stringify(resp.Payload);
+      const invokeSpy = jest.fn().mockResolvedValue(resp);
+      const clientSpy = jest.fn().mockImplementation(() => {
+        return { invoke: invokeSpy };
+      });
+      const svc = new TestResultsService(new clientSpy());
+      const customParams = { some: 'params' };
+      await svc.getTestResults(customParams);
+
+      expect(invokeSpy.mock.calls).toHaveLength(1);
+      expect(invokeSpy.mock.calls[0][0].FunctionName).toEqual('cvs-svc-test-results');
+      const sentPayload = JSON.parse(invokeSpy.mock.calls[0][0].Payload);
+      expect(sentPayload.httpMethod).toEqual('GET');
+      expect(sentPayload.path).toEqual('/test-results/getTestResultsByTesterStaffId');
+      expect(sentPayload.queryStringParameters).toEqual(customParams);
+    });
+  });
 });
