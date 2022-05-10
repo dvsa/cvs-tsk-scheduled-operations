@@ -24,6 +24,16 @@ describe('ConfigurationUtil', () => {
     });
   });
 
+  describe('when calling getInvokeConfig()', () => {
+    it('should throw an error', () => {
+      process.env.BRANCH = '';
+      try {
+        badConfig.getInvokeConfig();
+      } catch (e) {
+        expect(e.message).toEqual('Lambda Invoke config not defined in the config file.')
+      }
+    });
+  });
   describe('when calling getInvokeConfig() and the BRANCH environment variable is not defined', () => {
     it('should return local invokeConfig', () => {
       process.env.BRANCH = '';
@@ -38,6 +48,13 @@ describe('ConfigurationUtil', () => {
       const invokeConfigInstance: IInvokeConfig = config.getInvokeConfig();
       expect(invokeConfigInstance.params.endpoint).not.toEqual(undefined);
       expect(invokeConfigInstance.params.endpoint).toEqual('http://localhost:3013');
+    });
+  });
+  describe('when calling getInvokeConfig() and the BRANCH environment variable is not local', () => {
+    it('should return remote invokeConfig', () => {
+      process.env.BRANCH = 'remote';
+      const invokeConfigInstance: IInvokeConfig = config.getInvokeConfig();
+      expect(invokeConfigInstance.params.endpoint).toEqual(undefined);
     });
   });
 
@@ -178,4 +195,20 @@ describe('ConfigurationUtil', () => {
   });
 
   process.env.BRANCH = branch;
+
+    describe('getFunctions', () => {
+        it('should return data', async () => {
+            const output = config.getFunctions()
+           expect(JSON.stringify(output)).toEqual('[{\"name\":\"cleanupVisits\",\"eventName\":\"cleanup\"}]')
+        })
+    })
+  describe('getFunctions', () => {
+      it('should throw and error', async () => {
+        try {
+          badConfig.getFunctions()
+        } catch (e) {
+          expect(e.message).toEqual('Functions were not defined in the config file.')
+        }
+      })
+  })
 });
