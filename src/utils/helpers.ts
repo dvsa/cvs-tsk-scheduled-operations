@@ -67,20 +67,6 @@ export const getLastEventTimeByTesterStaffId = (
   return events;
 };
 
-export const getActionableStaffIdsByTime = (
-  lastActionsByStaffId: Map<string, Date>,
-  NotificationTime: number,
-): string[] => {
-  const notificationThresholdTime = subHours(new Date(), NotificationTime);
-  const notifiableStaffIDs: string[] = [];
-  lastActionsByStaffId.forEach((lastActionTime, staffID) => {
-    if (isBefore(lastActionTime, notificationThresholdTime)) {
-      notifiableStaffIDs.push(staffID);
-    }
-  });
-  return notifiableStaffIDs;
-};
-
 export const removeFromMap = (map: Map<string, any>, removeIds: string[]): Map<string, any> => {
   const newMap: Map<string, any> = new Map<string, any>();
   map.forEach((val, key) => {
