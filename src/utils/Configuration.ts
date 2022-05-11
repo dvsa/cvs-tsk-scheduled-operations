@@ -69,14 +69,12 @@ class Configuration {
     return this.config.functions.map((fn: Handler) => {
       const [name, params] = Object.entries(fn)[0];
 
-      const data = {
+      return {
         name,
         function: require(`../functions/${name}`)[name],
         eventName: params.eventName,
         event: params.event,
       };
-      console.log(data.function);
-      return data;
     });
   }
 

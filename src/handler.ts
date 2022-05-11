@@ -25,7 +25,6 @@ const handler: Handler = async (event: any, context: Context, callback: Callback
   // Finding an appropriate λ matching the request
   const config: Configuration = Configuration.getInstance();
   const functions: IFunctionEvent[] = config.getFunctions();
-  console.log(functions);
   // const serverlessConfig: any = config.getConfig().serverless;
 
   const matchingLambdaEvents: IFunctionEvent[] = functions.filter((fn) => {
