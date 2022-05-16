@@ -89,6 +89,25 @@ describe('Activity Service', () => {
         const output = await svc.getActivities({ fromStartTime: '2020-02-12' });
         expect(output).toEqual([]);
       });
+      it('should return an empty array, and no error (visit)', async () => {
+        const invokeMock = jest.fn().mockResolvedValue(
+            wrapLambdaResponse(
+                JSON.stringify({
+                  body: 'No resources match the search criteria',
+                  statusCode: 404,
+                }),
+            ),
+        );
+        const lambdaSvcMock = jest.fn().mockImplementation(() => {
+          return { invoke: invokeMock };
+        });
+        const svc = new ActivityService(new lambdaSvcMock());
+
+        expect.assertions(1);
+
+        const output = await svc.getActivities({ activityType: "visit", fromStartTime: '2020-02-12' });
+        expect(output).toEqual([]);
+      });
     });
 
     describe('Lambda client returns a single record in expected format', () => {
