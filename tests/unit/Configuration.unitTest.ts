@@ -30,7 +30,7 @@ describe('ConfigurationUtil', () => {
       try {
         badConfig.getInvokeConfig();
       } catch (e) {
-        expect(e.message).toEqual('Lambda Invoke config not defined in the config file.')
+        expect(e.message).toEqual('Lambda Invoke config not defined in the config file.');
       }
     });
   });
@@ -196,19 +196,19 @@ describe('ConfigurationUtil', () => {
 
   process.env.BRANCH = branch;
 
-    describe('getFunctions', () => {
-        it('should return data', async () => {
-            const output = config.getFunctions()
-           expect(JSON.stringify(output)).toEqual('[{\"name\":\"cleanupVisits\",\"eventName\":\"cleanup\"}]')
-        })
-    })
   describe('getFunctions', () => {
-      it('should throw and error', async () => {
-        try {
-          badConfig.getFunctions()
-        } catch (e) {
-          expect(e.message).toEqual('Functions were not defined in the config file.')
-        }
-      })
-  })
+    it('should return data', async () => {
+      const output = config.getFunctions();
+      expect(JSON.stringify(output)).toEqual('[{"name":"cleanupVisits","eventName":"cleanup"}]');
+    });
+  });
+  describe('getFunctions', () => {
+    it('should throw and error', async () => {
+      try {
+        badConfig.getFunctions();
+      } catch (e) {
+        expect(e.message).toEqual('Functions were not defined in the config file.');
+      }
+    });
+  });
 });

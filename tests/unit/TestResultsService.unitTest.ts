@@ -79,7 +79,7 @@ describe('Test Results Service', () => {
     it('invokes the lambda client once, no test results found', async () => {
       expect.assertions(5);
       const resp: any = cloneDeep(trResponse);
-      resp.Payload.statusCode = 404
+      resp.Payload.statusCode = 404;
       resp.Payload.body = JSON.stringify(testResults);
       resp.Payload = JSON.stringify(resp.Payload);
       const invokeSpy = jest.fn().mockResolvedValue(resp);

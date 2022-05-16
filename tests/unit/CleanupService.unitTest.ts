@@ -6,10 +6,10 @@ import { TestResultsService } from '../../src/services/TestResultsService';
 import { cloneDeep } from 'lodash';
 import { IActivity } from '../../src/models';
 import dateMock from '../util/dateMockUtils';
-import {ERRORS, HTTPRESPONSE} from '../../src/utils/Enums';
-import { subMinutes } from "date-fns";
-import {NotificationService} from "../../src/services/NotificationService";
-import HTTPError from "../../src/models/HTTPError";
+import { ERRORS, HTTPRESPONSE } from '../../src/utils/Enums';
+import { subMinutes } from 'date-fns';
+import { NotificationService } from '../../src/services/NotificationService';
+import HTTPError from '../../src/models/HTTPError';
 
 jest.mock('../../src/services/ActivityService');
 
@@ -57,7 +57,8 @@ describe('Cleanup Service', () => {
 
       ActivityService.prototype.getActivitiesList = jest.fn().mockResolvedValue(allActivities);
       TestResultsService.prototype.getTestResults = jest.fn().mockImplementation((params) => {
-        return testResults.filter((t) => t.testerStaffId === params.testerStaffId);});
+        return testResults.filter((t) => t.testerStaffId === params.testerStaffId);
+      });
       const mockNotifyClient = jest.fn();
       const svc = new CleanupService(new NotificationService(mockNotifyClient));
       await svc.cleanupVisits();
@@ -161,10 +162,11 @@ describe('Cleanup Service', () => {
 
       ActivityService.prototype.getActivitiesList = jest.fn().mockResolvedValue(allActivities);
       TestResultsService.prototype.getTestResults = jest.fn().mockImplementation((params) => {
-        return testResults.filter((t) => t.testerStaffId === params.testerStaffId);});
+        return testResults.filter((t) => t.testerStaffId === params.testerStaffId);
+      });
       NotificationService.prototype.sendVisitExpiryNotification = jest.fn().mockImplementation((params) => {
         return Promise.resolve();
-      })
+      });
       const mockNotifyClient = jest.fn();
       const svc = new CleanupService(new NotificationService(mockNotifyClient));
       await svc.cleanupVisits();
@@ -187,7 +189,8 @@ describe('Cleanup Service', () => {
 
       ActivityService.prototype.getActivitiesList = jest.fn().mockResolvedValue(allActivities);
       TestResultsService.prototype.getTestResults = jest.fn().mockImplementation((params) => {
-        return testResults.filter((t) => t.testerStaffId === params.testerStaffId);});
+        return testResults.filter((t) => t.testerStaffId === params.testerStaffId);
+      });
       const svc = new CleanupService(new notifySvcMock());
       await svc.cleanupVisits();
       expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Notification email failed to send'));
@@ -196,10 +199,10 @@ describe('Cleanup Service', () => {
   });
 
   describe('With exception caught in try/catch at top level of Cleanup Service', () => {
-    it("should log the error", async () => {
+    it('should log the error', async () => {
       jest.resetAllMocks();
       console.log = jest.fn();
-      jest.spyOn(ActivityService.prototype, "getActivitiesList").mockRejectedValue(new HTTPError(418, 'bad things'));
+      jest.spyOn(ActivityService.prototype, 'getActivitiesList').mockRejectedValue(new HTTPError(418, 'bad things'));
       const svc = new CleanupService(new (jest.fn())());
       try {
         await svc.cleanupVisits();

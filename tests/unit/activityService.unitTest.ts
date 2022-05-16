@@ -1,7 +1,7 @@
 import { ActivityService } from '../../src/services/ActivityService';
 import { LambdaService } from '../../src/services/LambdaService';
 import HTTPError from '../../src/models/HTTPError';
-import {wrapLambdaResponse} from '../util/responseUtils';
+import { wrapLambdaResponse } from '../util/responseUtils';
 import activitiesResponse from '../resources/activities-response.json';
 import testActivities from '../resources/testActivities.json';
 import dateMock from '../util/dateMockUtils';
@@ -56,7 +56,7 @@ describe('Activity Service', () => {
         isOpen: false,
         toStartTime: expectedToStartTime,
         activityType: 'wait',
-        testerStaffId: 'abc123'
+        testerStaffId: 'abc123',
       });
 
       dateMock.restoreDateMock();
@@ -91,12 +91,12 @@ describe('Activity Service', () => {
       });
       it('should return an empty array, and no error (visit)', async () => {
         const invokeMock = jest.fn().mockResolvedValue(
-            wrapLambdaResponse(
-                JSON.stringify({
-                  body: 'No resources match the search criteria',
-                  statusCode: 404,
-                }),
-            ),
+          wrapLambdaResponse(
+            JSON.stringify({
+              body: 'No resources match the search criteria',
+              statusCode: 404,
+            }),
+          ),
         );
         const lambdaSvcMock = jest.fn().mockImplementation(() => {
           return { invoke: invokeMock };
@@ -105,7 +105,7 @@ describe('Activity Service', () => {
 
         expect.assertions(1);
 
-        const output = await svc.getActivities({ activityType: "visit", fromStartTime: '2020-02-12' });
+        const output = await svc.getActivities({ activityType: 'visit', fromStartTime: '2020-02-12' });
         expect(output).toEqual([]);
       });
     });
@@ -162,28 +162,29 @@ describe('Activity Service', () => {
     describe('when the end visit lambda invocation', () => {
       it('is successful, returns a valid response', async () => {
         const invokeMock = jest.fn().mockResolvedValue(
-            wrapLambdaResponse(
-                JSON.stringify({
-                  body: '{"wasVisitAlreadyClosed": false}',
-                  statusCode: 200,
-                }),
-            ),
-        );        const lambdaSvcMock = jest.fn().mockImplementation(() => {
+          wrapLambdaResponse(
+            JSON.stringify({
+              body: '{"wasVisitAlreadyClosed": false}',
+              statusCode: 200,
+            }),
+          ),
+        );
+        const lambdaSvcMock = jest.fn().mockImplementation(() => {
           return { invoke: invokeMock };
         });
         const svc = new ActivityService(new lambdaSvcMock());
-        const output: any = await svc.endVisit(testActivities[0].id,'')
-        expect(output).toEqual(JSON.parse('{"wasVisitAlreadyClosed": false}'))
+        const output: any = await svc.endVisit(testActivities[0].id, '');
+        expect(output).toEqual(JSON.parse('{"wasVisitAlreadyClosed": false}'));
       });
       it('returns an error, throws an appropriate error code', async () => {
         const invokeMock = jest.fn().mockRejectedValue(new HTTPError(500, 'Error'));
         const lambdaSvcMock = jest.fn().mockImplementation(() => {
-          return {invoke: invokeMock};
+          return { invoke: invokeMock };
         });
         const svc = new ActivityService(new lambdaSvcMock());
         await svc.endVisit(testActivities[0].id, '').catch((x) => {
-          expect(x.statusCode).toEqual(500)
-        })
+          expect(x.statusCode).toEqual(500);
+        });
       });
     });
   });
