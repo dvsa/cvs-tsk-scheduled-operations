@@ -9,12 +9,12 @@ provider:
   iam:
     role:
       statements:
-        - Effect: "Allow"
+        - Effect: 'Allow'
           Action:
-            - "xray:PutTraceSegments"
-            - "xray:PutTelemetryRecords"
+            - 'xray:PutTraceSegments'
+            - 'xray:PutTelemetryRecords'
           Resource:
-            - "*"
+            - '*'
 
 plugins:
   - serverless-dynamodb-local
@@ -29,9 +29,9 @@ functions:
       - cloudwatchEvent:
           event:
             source:
-              - "aws.events"
+              - 'aws.events'
             detail-type:
-              - "Scheduled Event"
+              - 'Scheduled Event'
             detail:
               task:
-                - "cleanup"
+                - 'cleanup'

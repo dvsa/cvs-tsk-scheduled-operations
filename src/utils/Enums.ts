@@ -5,17 +5,42 @@ export enum TIMES {
 }
 
 export enum HTTPRESPONSE {
-  NOT_VALID_JSON = "Invalid JSON",
-  NOTHING_TO_DO = "No stale visits found. Nothing to act on.",
-  SUCCESS = "Cleanup Success",
+  NOT_VALID_JSON = 'Invalid JSON',
+  NOTHING_TO_DO = 'No stale visits found. Nothing to act on.',
+  SUCCESS = 'Cleanup Success',
 }
 
 export enum ERRORS {
-  NO_BRANCH = "'BRANCH' environment variable not found",
-  NOTIFY_CONFIG_NOT_DEFINED = "The Notify config is not defined in the config file.",
-  TEMPLATE_ID_ENV_VAR_NOT_EXIST = "TEMPLATE_ID environment variable does not exist.",
-  SECRET_ENV_VAR_NOT_SET = "SECRET_NAME environment variable not set.",
-  SECRET_STRING_EMPTY = "SecretString is empty.",
-  GET_ACIVITY_FAILURE = "Get Activities encountered errors",
-  END_ACIVITY_FAILURE = "Ending activities encountered failures",
+  NOTIFY_CONFIG_NOT_DEFINED = 'The Notify config is not defined in the config file.',
+  TEMPLATE_ID_ENV_VAR_NOT_EXIST = 'TEMPLATE_ID environment variable does not exist.',
+  SECRET_ENV_VAR_NOT_SET = 'SECRET_NAME environment variable not set.',
+  SECRET_STRING_EMPTY = 'SecretString is empty.',
+  END_ACTIVITY_FAILURE = 'Ending activities encountered failures',
+}
+
+export enum LOG_REASONS {
+  VISIT_WITHIN_3_HOURS = 'Visit under 3 hours',
+  LAST_ACTION_UNDER_3_HOURS = 'Last action time under 3 hours ago',
+  LAST_ACTION_OVER_3_HOURS = 'Last action time more than 3 hours ago',
+  LAST_ACTION_OVER_4_HOURS = 'Last action time more than 4 hours ago',
+}
+
+export enum LOG_STATUS {
+  NO_ACTION = 'No action',
+  NOTIFY_OK = 'Notification email sent',
+  NOTIFY_FAIL = 'Notification email failed to send',
+  CLOSED_OK = 'Closed',
+  CLOSED_FAIL = 'Failed to close',
+}
+
+export enum LOG_ACTIONS {
+  NO_ACTION = 'NO ACTION',
+  NOTIFY = 'NOTIFY',
+  CLOSE = 'CLOSE',
+}
+
+export enum ACTIVITY_TYPE {
+  VISIT = 'visit',
+  WAIT = 'wait',
+  UNACCOUNTABLE_TIME = 'unaccountable time',
 }

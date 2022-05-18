@@ -1,20 +1,11 @@
 // @ts-ignore
-import * as yml from "node-yaml";
-import { Handler } from "aws-lambda";
-import {
-  IConfig,
-  IFunctionEvent,
-  IInvokeConfig,
-  INotifyConfig,
-  ISecretConfig,
-} from "../models";
-import { ERRORS } from "./Enums";
-import SecretsManager, {
-  GetSecretValueRequest,
-  GetSecretValueResponse,
-} from "aws-sdk/clients/secretsmanager";
-import { safeLoad } from "js-yaml";
-import * as AWSXray from "aws-xray-sdk";
+import * as yml from 'node-yaml';
+import { Handler } from 'aws-lambda';
+import { IConfig, IFunctionEvent, IInvokeConfig, INotifyConfig, ISecretConfig } from '../models';
+import { ERRORS } from './Enums';
+import SecretsManager, { GetSecretValueRequest, GetSecretValueResponse } from 'aws-sdk/clients/secretsmanager';
+import { safeLoad } from 'js-yaml';
+import * as AWSXray from 'aws-xray-sdk';
 
 class Configuration {
   private static instance: Configuration;
@@ -23,9 +14,7 @@ class Configuration {
 
   constructor(configPath: string) {
     // @ts-ignore
-    this.secretsClient = AWSXray.captureAWSClient(
-      new SecretsManager({ region: "eu-west-1" })
-    );
+    this.secretsClient = AWSXray.captureAWSClient(new SecretsManager({ region: 'eu-west-1' }));
     this.config = yml.readSync(configPath);
     // Replace environment variable references
     let stringifiedConfig: string = JSON.stringify(this.config);
@@ -35,14 +24,12 @@ class Configuration {
     if (matches) {
       matches.forEach((match: string) => {
         envRegex.lastIndex = 0;
-        const captureGroups: RegExpExecArray = envRegex.exec(
-          match
-        ) as RegExpExecArray;
+        const captureGroups: RegExpExecArray = envRegex.exec(match) as RegExpExecArray;
 
         // Insert the environment variable if available. If not, insert placeholder. If no placeholder, leave it as is.
         stringifiedConfig = stringifiedConfig.replace(
           match,
-          process.env[captureGroups[1]] || captureGroups[2] || captureGroups[1]
+          process.env[captureGroups[1]] || captureGroups[2] || captureGroups[1],
         );
       });
     }
@@ -56,7 +43,7 @@ class Configuration {
    */
   public static getInstance(): Configuration {
     if (!this.instance) {
-      this.instance = new Configuration("../config/config.yml");
+      this.instance = new Configuration('../config/config.yml');
     }
 
     return Configuration.instance;
@@ -76,7 +63,7 @@ class Configuration {
    */
   public getFunctions(): IFunctionEvent[] {
     if (!this.config.functions) {
-      throw new Error("Functions were not defined in the config file.");
+      throw new Error('Functions were not defined in the config file.');
     }
 
     return this.config.functions.map((fn: Handler) => {
@@ -112,14 +99,11 @@ class Configuration {
    */
   public getInvokeConfig(): IInvokeConfig {
     if (!this.config.invoke) {
-      throw new Error("Lambda Invoke config not defined in the config file.");
+      throw new Error('Lambda Invoke config not defined in the config file.');
     }
 
     // Not defining BRANCH will default to local
-    const env: string =
-      !process.env.BRANCH || process.env.BRANCH === "local"
-        ? "local"
-        : "remote";
+    const env: string = !process.env.BRANCH || process.env.BRANCH === 'local' ? 'local' : 'remote';
 
     return this.config.invoke[env];
   }
@@ -128,7 +112,7 @@ class Configuration {
    * Retrieves the templateId from config file when running locally, else environment variable
    */
   public async getTemplateIdFromEV(): Promise<string> {
-    if (!process.env.BRANCH || process.env.BRANCH === "local") {
+    if (!process.env.BRANCH || process.env.BRANCH === 'local') {
       if (!this.config.notify.templateId) {
         throw new Error(ERRORS.TEMPLATE_ID_ENV_VAR_NOT_EXIST);
       } else {
@@ -151,9 +135,7 @@ class Configuration {
       const req: GetSecretValueRequest = {
         SecretId: process.env.SECRET_NAME,
       };
-      const resp: GetSecretValueResponse = await this.secretsClient
-        .getSecretValue(req)
-        .promise();
+      const resp: GetSecretValueResponse = await this.secretsClient.getSecretValue(req).promise();
       try {
         secret = await safeLoad(resp.SecretString as string);
       } catch (e) {

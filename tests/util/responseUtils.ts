@@ -1,4 +1,4 @@
-import { AWSError, Lambda, Response } from "aws-sdk";
+import { AWSError, Lambda, Response } from 'aws-sdk';
 
 const wrapLambdaResponse = (payload: any) => {
   const response = new Response<Lambda.Types.InvocationResponse, AWSError>();

@@ -1,17 +1,13 @@
-import HTTPError from "../models/HTTPError";
+import HTTPError from '../models/HTTPError';
 /**
  * Validates the invocation response
  * @param response - the invocation response
  */
 export const validateInvocationResponse = (response: any) => {
-  if (
-    (!response.Payload || response.Payload === "") &&
-    response.StatusCode &&
-    response.StatusCode < 400
-  ) {
+  if ((!response.Payload || response.Payload === '') && response.StatusCode && response.StatusCode < 400) {
     throw new HTTPError(
       response.StatusCode,
-      `Lambda invocation returned error: ${response.StatusCode} with empty payload.`
+      `Lambda invocation returned error: ${response.StatusCode} with empty payload.`,
     );
   }
 
@@ -20,31 +16,17 @@ export const validateInvocationResponse = (response: any) => {
   try {
     payload = JSON.parse(response.Payload);
   } catch (error) {
-    console.log("validateInvocationResponse response parse error", response);
-    throw new HTTPError(
-      500,
-      `Lambda invocation returned bad data: ${response.Payload}`
-    );
+    console.log('validateInvocationResponse response parse error', response);
+    throw new HTTPError(500, `Lambda invocation returned bad data: ${response.Payload}`);
   }
 
-  if (payload.statusCode === 404) {
-    console.log(
-      "validateInvocationResponse response statusCode >= 400",
-      response
-    );
-    throw new HTTPError(404, payload.body);
+  switch (payload.statusCode) {
+    case 200:
+    case 201:
+      return payload;
+    case 404:
+      return null;
+    default:
+      throw new HTTPError(payload.statusCode, `Lambda invocation returned error: ${payload.statusCode} ${payload}`);
   }
-
-  if (payload.statusCode >= 400) {
-    console.log(
-      "validateInvocationResponse response statusCode >= 400",
-      response
-    );
-    throw new HTTPError(
-      payload.statusCode,
-      `Lambda invocation returned error: ${payload.statusCode} ${payload.body}`
-    );
-  }
-
-  return payload;
 };
