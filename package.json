@@ -68,7 +68,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.3",
     "node-yaml": "^3.2.0",
-    "notifications-node-client": "^5.1.1",
+    "notifications-node-client": "^6.0.0",
     "path-parser": "^4.2.0",
     "reflect-metadata": "^0.1.13",
     "request": "^2.88.2",
