@@ -1,13 +1,14 @@
-import { Configuration } from '../../src/utils/Configuration';
 import { IInvokeConfig } from '../../src/models';
-
-import mockConfig from '../util/mockConfig';
+import { Configuration } from '../../src/utils/Configuration';
 import { ERRORS } from '../../src/utils/Enums';
+import mockConfig from '../util/mockConfig';
 jest.mock('aws-sdk/clients/secretsmanager');
 
 describe('ConfigurationUtil', () => {
   mockConfig();
+  console.log('here!?!?');
   const config: Configuration = Configuration.getInstance();
+  console.log(config);
   const badConfig: Configuration = new Configuration('../../tests/resources/badConfig.yml');
   const branch = process.env.BRANCH;
   const mockError = new Error(ERRORS.TEMPLATE_ID_ENV_VAR_NOT_EXIST);
@@ -163,13 +164,9 @@ describe('ConfigurationUtil', () => {
 
   describe('getNotifyConfig', () => {
     describe('when notify config not defined', () => {
-      it('should throw an error', () => {
+      it('should throw an error', async () => {
         delete (config as any).config.notify;
-        try {
-          config.getNotifyConfig();
-        } catch (e) {
-          expect(e.message).toEqual(ERRORS.NOTIFY_CONFIG_NOT_DEFINED);
-        }
+        await expect(config.getNotifyConfig()).rejects.toThrow(ERRORS.NOTIFY_CONFIG_NOT_DEFINED);
       });
     });
 
