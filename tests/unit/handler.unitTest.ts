@@ -1,5 +1,5 @@
+import { Context } from 'aws-lambda';
 import { handler } from '../../src/handler';
-import { Context, Handler } from 'aws-lambda';
 import { CleanupService } from '../../src/services/CleanupService';
 import { Configuration } from '../../src/utils/Configuration';
 
@@ -117,7 +117,7 @@ describe('Handler', () => {
           return;
         });
       } catch (e) {
-        expect(e.message).toEqual("Cannot read property 'body' of undefined");
+        expect(e.message).toEqual("Cannot read properties of undefined (reading 'body')");
       }
     });
   });
