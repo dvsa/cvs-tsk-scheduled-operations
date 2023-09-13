@@ -1,11 +1,11 @@
 // @ts-ignore
-import * as yml from 'node-yaml';
 import { Handler } from 'aws-lambda';
+import SecretsManager, { GetSecretValueRequest, GetSecretValueResponse } from 'aws-sdk/clients/secretsmanager';
+import * as AWSXray from 'aws-xray-sdk';
+import { safeLoad } from 'js-yaml';
+import * as yml from 'node-yaml';
 import { IConfig, IFunctionEvent, IInvokeConfig, INotifyConfig, ISecretConfig } from '../models';
 import { ERRORS } from './Enums';
-import SecretsManager, { GetSecretValueRequest, GetSecretValueResponse } from 'aws-sdk/clients/secretsmanager';
-import { safeLoad } from 'js-yaml';
-import * as AWSXray from 'aws-xray-sdk';
 
 class Configuration {
   private static instance: Configuration;
@@ -137,7 +137,7 @@ class Configuration {
       };
       const resp: GetSecretValueResponse = await this.secretsClient.getSecretValue(req).promise();
       try {
-        secret = await safeLoad(resp.SecretString as string);
+        secret = (await safeLoad(resp.SecretString as string)) as ISecretConfig;
       } catch (e) {
         throw new Error(ERRORS.SECRET_STRING_EMPTY);
       }
