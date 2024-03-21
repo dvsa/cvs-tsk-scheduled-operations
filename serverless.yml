@@ -3,6 +3,7 @@ service: cvs-tsk-scheduled-operations
 provider:
   name: aws
   runtime: nodejs18.x
+  region: eu-west-1
   tracing:
     lambda: true
     apiGateway: true
@@ -17,7 +18,7 @@ provider:
             - '*'
 
 plugins:
-  - serverless-dynamodb-local
+  - serverless-dynamodb
   - serverless-offline
   - serverless-plugin-tracing
   - serverless-plugin-typescript
