@@ -26,8 +26,6 @@ plugins:
 functions:
   cleanupVisits:
     handler: src/handler.handler
-    environment:
-      BRANCH: local
     events:
       - cloudwatchEvent:
           event:
