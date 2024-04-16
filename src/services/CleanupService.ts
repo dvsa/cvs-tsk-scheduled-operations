@@ -1,6 +1,6 @@
 import { LambdaService } from './LambdaService';
 import { ActivityService } from './ActivityService';
-import Lambda = require('aws-sdk/clients/lambda');
+import { LambdaClient } from '@aws-sdk/client-lambda';
 import { TestResultsService } from './TestResultsService';
 import { IActivity, ILogVisit, ITestResult } from '../models';
 import { ACTIVITY_TYPE, HTTPRESPONSE, LOG_ACTIONS, LOG_REASONS, LOG_STATUS, TIMES } from '../utils/Enums';
@@ -17,7 +17,7 @@ export class CleanupService {
   private logVisits: ILogVisit[] = [];
 
   constructor(notifyService: NotificationService) {
-    this.lambdaService = new LambdaService(new Lambda());
+    this.lambdaService = new LambdaService(new LambdaClient());
     this.activityService = new ActivityService(this.lambdaService);
     this.testResultsService = new TestResultsService(this.lambdaService);
     this.notificationService = notifyService;

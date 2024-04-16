@@ -68,7 +68,7 @@ describe('Test Results Service', () => {
 
       expect(invokeSpy.mock.calls).toHaveLength(1);
       expect(invokeSpy.mock.calls[0][0].FunctionName).toEqual('cvs-svc-test-results');
-      const sentPayload = JSON.parse(invokeSpy.mock.calls[0][0].Payload);
+      const sentPayload = JSON.parse(Buffer.from(invokeSpy.mock.calls[0][0].Payload).toString());
       expect(sentPayload.httpMethod).toEqual('GET');
       expect(sentPayload.path).toEqual('/test-results/getTestResultsByTesterStaffId');
       expect(sentPayload.queryStringParameters).toEqual(customParams);
@@ -92,7 +92,7 @@ describe('Test Results Service', () => {
 
       expect(invokeSpy.mock.calls).toHaveLength(1);
       expect(invokeSpy.mock.calls[0][0].FunctionName).toEqual('cvs-svc-test-results');
-      const sentPayload = JSON.parse(invokeSpy.mock.calls[0][0].Payload);
+      const sentPayload = JSON.parse(Buffer.from(invokeSpy.mock.calls[0][0].Payload).toString());
       expect(sentPayload.httpMethod).toEqual('GET');
       expect(sentPayload.path).toEqual('/test-results/getTestResultsByTesterStaffId');
       expect(sentPayload.queryStringParameters).toEqual(customParams);

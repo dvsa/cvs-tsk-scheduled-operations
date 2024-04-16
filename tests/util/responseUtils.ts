@@ -1,33 +1,19 @@
-import { AWSError, Lambda, Response } from 'aws-sdk';
+import { InvocationResponse } from "@aws-sdk/client-lambda";
 
 const wrapLambdaResponse = (payload: any) => {
-  const response = new Response<Lambda.Types.InvocationResponse, AWSError>();
-  Object.assign(response, {
-    data: {
-      StatusCode: 200,
-      Payload: payload,
-    },
-  });
-  return {
-    $response: response,
+  const response : InvocationResponse = {
     StatusCode: 200,
-    Payload: payload,
-  };
+    Payload: payload
+  }
+  return response;
 };
 
 const wrapLambdaErrorResponse = (code: number, payload: any) => {
-  const response = new Response<Lambda.Types.InvocationResponse, AWSError>();
-  Object.assign(response, {
-    data: {
-      StatusCode: code,
-      Payload: payload,
-    },
-  });
-  return {
-    $response: response,
+  const response : InvocationResponse = {
     StatusCode: code,
-    Payload: payload,
-  };
+    Payload: payload
+  }
+  return response;
 };
 
 export { wrapLambdaResponse, wrapLambdaErrorResponse };

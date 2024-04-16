@@ -1,6 +1,7 @@
 import { IInvokeConfig, ITestResult } from '../models';
-import { PromiseResult } from 'aws-sdk/lib/request';
-import { AWSError, Lambda } from 'aws-sdk';
+import { ServiceException } from '@smithy/smithy-client';
+import { InvocationRequest, InvokeCommandOutput } from '@aws-sdk/client-lambda';
+import { toUint8Array } from "@smithy/util-utf8";
 import { LambdaService } from './LambdaService';
 import { Configuration } from '../utils/Configuration';
 import { validateInvocationResponse } from '../utils/validateInvocationResponse';
@@ -37,20 +38,20 @@ class TestResultsService {
    */
   async getTestResults(params: any): Promise<ITestResult[]> {
     const config: IInvokeConfig = this.config.getInvokeConfig();
-    const invokeParams: any = {
+    const invokeParams: InvocationRequest = {
       FunctionName: config.functions.testResults.name,
       InvocationType: 'RequestResponse',
       LogType: 'Tail',
-      Payload: JSON.stringify({
+      Payload: toUint8Array(JSON.stringify({
         httpMethod: 'GET',
         path: '/test-results/getTestResultsByTesterStaffId',
         queryStringParameters: params,
-      }),
+      })),
     };
 
     return this.lambdaClient
       .invoke(invokeParams)
-      .then((response: PromiseResult<Lambda.Types.InvocationResponse, AWSError>) => {
+      .then((response: InvokeCommandOutput | ServiceException) => {
         const payload: any = validateInvocationResponse(response); // Response validation
         payload
           ? console.log(`After validation: `, payload)
