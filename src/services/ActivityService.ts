@@ -1,6 +1,6 @@
 import { ServiceException } from '@smithy/smithy-client';
 import { InvocationRequest, InvokeCommandOutput } from '@aws-sdk/client-lambda';
-import { toUint8Array } from "@smithy/util-utf8";
+import { toUint8Array } from '@smithy/util-utf8';
 import { LambdaService } from './LambdaService';
 import { Configuration } from '../utils/Configuration';
 import { ACTIVITY_TYPE, ERRORS } from '../utils/Enums';
@@ -65,28 +65,24 @@ class ActivityService {
       LogType: 'Tail',
       Payload: toUint8Array(
         JSON.stringify({
-        httpMethod: 'GET',
-        path: '/activities/cleanup',
-        queryStringParameters: params,
-      })
+          httpMethod: 'GET',
+          path: '/activities/cleanup',
+          queryStringParameters: params,
+        }),
       ),
     };
 
-    return this.lambdaClient
-      .invoke(invokeParams)
-      .then((response: InvokeCommandOutput | ServiceException) => {
-        const payload: any = validateInvocationResponse(response); // Response validation
-        if (payload) {
-          console.log(`After validation - ${params.activityType}: `, payload);
-        } else {
-          params.activityType === ACTIVITY_TYPE.VISIT
-            ? console.log(`No ${params.activityType} activities returned`)
-            : console.log(
-                `No ${params.activityType} activities returned for tester staff id - ${params.testerStaffId}`,
-              );
-        }
-        return payload ? JSON.parse(payload.body) : []; // Response conversion
-      });
+    return this.lambdaClient.invoke(invokeParams).then((response: InvokeCommandOutput | ServiceException) => {
+      const payload: any = validateInvocationResponse(response); // Response validation
+      if (payload) {
+        console.log(`After validation - ${params.activityType}: `, payload);
+      } else {
+        params.activityType === ACTIVITY_TYPE.VISIT
+          ? console.log(`No ${params.activityType} activities returned`)
+          : console.log(`No ${params.activityType} activities returned for tester staff id - ${params.testerStaffId}`);
+      }
+      return payload ? JSON.parse(payload.body) : []; // Response conversion
+    });
   }
 
   /**
@@ -100,16 +96,18 @@ class ActivityService {
       FunctionName: config.functions.activities.name,
       InvocationType: 'RequestResponse',
       LogType: 'Tail',
-      Payload: toUint8Array(JSON.stringify({
-        httpMethod: 'PUT',
-        path: `/activities/${activityId}/end`,
-        pathParameters: {
-          activityId,
-        },
-        body: JSON.stringify({
-          endTime: lastActionTime,
+      Payload: toUint8Array(
+        JSON.stringify({
+          httpMethod: 'PUT',
+          path: `/activities/${activityId}/end`,
+          pathParameters: {
+            activityId,
+          },
+          body: JSON.stringify({
+            endTime: lastActionTime,
+          }),
         }),
-      })),
+      ),
     };
     return this.lambdaClient
       .invoke(invokeParams)

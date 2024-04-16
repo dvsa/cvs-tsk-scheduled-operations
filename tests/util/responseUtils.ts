@@ -1,18 +1,18 @@
-import { InvocationResponse } from "@aws-sdk/client-lambda";
+import { InvocationResponse } from '@aws-sdk/client-lambda';
 
 const wrapLambdaResponse = (payload: any) => {
-  const response : InvocationResponse = {
+  const response: InvocationResponse = {
     StatusCode: 200,
-    Payload: payload
-  }
+    Payload: payload,
+  };
   return response;
 };
 
 const wrapLambdaErrorResponse = (code: number, payload: any) => {
-  const response : InvocationResponse = {
+  const response: InvocationResponse = {
     StatusCode: code,
-    Payload: payload
-  }
+    Payload: payload,
+  };
   return response;
 };
 

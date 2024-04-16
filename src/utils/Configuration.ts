@@ -1,6 +1,10 @@
 import { Handler } from 'aws-lambda';
-import { SecretsManager, GetSecretValueCommandInput, GetSecretValueCommandOutput } from "@aws-sdk/client-secrets-manager";
-import AWSXRay from "aws-xray-sdk";
+import {
+  SecretsManager,
+  GetSecretValueCommandInput,
+  GetSecretValueCommandOutput,
+} from '@aws-sdk/client-secrets-manager';
+import AWSXRay from 'aws-xray-sdk';
 import { safeLoad } from 'js-yaml';
 import * as yml from 'node-yaml';
 import { IConfig, IFunctionEvent, IInvokeConfig, INotifyConfig, ISecretConfig } from '../models';
@@ -12,9 +16,11 @@ class Configuration {
   private secretsClient: SecretsManager;
 
   constructor(configPath: string) {
-    this.secretsClient = AWSXRay.captureAWSv3Client(new SecretsManager({
-      region: 'eu-west-1',
-    }));
+    this.secretsClient = AWSXRay.captureAWSv3Client(
+      new SecretsManager({
+        region: 'eu-west-1',
+      }),
+    );
     this.config = yml.readSync(configPath);
     // Replace environment variable references
     let stringifiedConfig: string = JSON.stringify(this.config);

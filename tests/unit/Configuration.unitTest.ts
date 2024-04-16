@@ -2,8 +2,12 @@ import { IInvokeConfig } from '../../src/models';
 import { Configuration } from '../../src/utils/Configuration';
 import { ERRORS } from '../../src/utils/Enums';
 import mockConfig from '../util/mockConfig';
-import {mockClient} from 'aws-sdk-client-mock';
-import {GetSecretValueCommand, SecretsManagerClient, SecretsManager, GetSecretValueCommandOutput} from '@aws-sdk/client-secrets-manager';
+import { mockClient } from 'aws-sdk-client-mock';
+import {
+  GetSecretValueCommand,
+  SecretsManager,
+  GetSecretValueCommandOutput,
+} from '@aws-sdk/client-secrets-manager';
 
 describe('ConfigurationUtil', () => {
   const smMock = mockClient(SecretsManager);
@@ -115,9 +119,8 @@ describe('ConfigurationUtil', () => {
       describe('and secretsClient returns a value', () => {
         it('invokes the secretsClient with correct config, and returns a secret containing object', async () => {
           process.env.SECRET_NAME = 'aSecret';
-          smMock.on(GetSecretValueCommand)
-          .resolves({
-              SecretString: JSON.stringify({"notify": {"api_key": "something"}}),
+          smMock.on(GetSecretValueCommand).resolves({
+            SecretString: JSON.stringify({ notify: { api_key: 'something' } }),
           });
           const output = await (config as any).setSecrets();
           const stub = smMock.commandCalls(GetSecretValueCommand);
