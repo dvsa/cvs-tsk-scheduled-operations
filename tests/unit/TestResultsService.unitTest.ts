@@ -7,16 +7,16 @@ import { cloneDeep } from 'lodash';
 describe('Test Results Service', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
-    jest.resetModuleRegistry();
+    jest.resetModules();
   });
   afterEach(() => {
     jest.restoreAllMocks();
-    jest.resetModuleRegistry();
+    jest.resetModules();
   });
   describe('getRecentTestResultsByTesterStaffId', () => {
     afterEach(() => {
       jest.restoreAllMocks();
-      jest.resetModuleRegistry();
+      jest.resetModules();
     });
     describe('when all testers have recent results', () => {
       it('should call getTestResults once per staffId, with correct params, and return a list of recent test results for each testerId', async () => {

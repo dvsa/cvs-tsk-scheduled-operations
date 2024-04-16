@@ -10,7 +10,7 @@ import { ACTIVITY_TYPE } from '../../src/utils/Enums';
 describe('Activity Service', () => {
   afterEach(() => {
     jest.restoreAllMocks();
-    jest.resetModuleRegistry();
+    jest.resetModules();
   });
 
   describe('Constructor', () => {
@@ -66,7 +66,7 @@ describe('Activity Service', () => {
   describe('getActivities', () => {
     beforeEach(() => {
       jest.restoreAllMocks();
-      jest.resetModuleRegistry();
+      jest.resetModules();
     });
 
     context('when no data is returned from database', () => {
@@ -129,7 +129,7 @@ describe('Activity Service', () => {
   describe('endActivities', () => {
     beforeEach(() => {
       jest.restoreAllMocks();
-      jest.resetModuleRegistry();
+      jest.resetModules();
     });
 
     describe('when the endVisit function throws an error', () => {

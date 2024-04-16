@@ -4,7 +4,7 @@ import { IActivity } from '../../src/models';
 
 describe('Notification Service', () => {
   afterEach(() => {
-    jest.resetModuleRegistry();
+    jest.resetModules();
     jest.restoreAllMocks();
   });
   describe('sendVisitExpiryNotifications', () => {

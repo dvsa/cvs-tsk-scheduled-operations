@@ -21,7 +21,7 @@ describe('ConfigurationUtil', () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
-    jest.resetModuleRegistry();
+    jest.resetModules();
   });
 
   describe('when calling getConfig() and config file is present', () => {
@@ -102,7 +102,6 @@ describe('ConfigurationUtil', () => {
   describe('setSecrets', () => {
     beforeEach(() => {
       jest.resetModules();
-      jest.resetModuleRegistry();
       jest.restoreAllMocks();
     });
     describe('with SECRET_NAME not set', () => {
