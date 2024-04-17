@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "@types/js-yaml": "^3.12.2",
-    "aws-sdk": "^2.600.0",
+    "aws-sdk": "^2.1587.0",
     "aws-xray-sdk": "^3.3.4",
     "date-fns": "^2.10.0",
     "js-yaml": "^3.13.1",
