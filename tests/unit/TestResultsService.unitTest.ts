@@ -7,16 +7,16 @@ import { cloneDeep } from 'lodash';
 describe('Test Results Service', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
-    jest.resetModuleRegistry();
+    jest.resetModules();
   });
   afterEach(() => {
     jest.restoreAllMocks();
-    jest.resetModuleRegistry();
+    jest.resetModules();
   });
   describe('getRecentTestResultsByTesterStaffId', () => {
     afterEach(() => {
       jest.restoreAllMocks();
-      jest.resetModuleRegistry();
+      jest.resetModules();
     });
     describe('when all testers have recent results', () => {
       it('should call getTestResults once per staffId, with correct params, and return a list of recent test results for each testerId', async () => {
@@ -68,7 +68,7 @@ describe('Test Results Service', () => {
 
       expect(invokeSpy.mock.calls).toHaveLength(1);
       expect(invokeSpy.mock.calls[0][0].FunctionName).toEqual('cvs-svc-test-results');
-      const sentPayload = JSON.parse(invokeSpy.mock.calls[0][0].Payload);
+      const sentPayload = JSON.parse(Buffer.from(invokeSpy.mock.calls[0][0].Payload).toString());
       expect(sentPayload.httpMethod).toEqual('GET');
       expect(sentPayload.path).toEqual('/test-results/getTestResultsByTesterStaffId');
       expect(sentPayload.queryStringParameters).toEqual(customParams);
@@ -92,7 +92,7 @@ describe('Test Results Service', () => {
 
       expect(invokeSpy.mock.calls).toHaveLength(1);
       expect(invokeSpy.mock.calls[0][0].FunctionName).toEqual('cvs-svc-test-results');
-      const sentPayload = JSON.parse(invokeSpy.mock.calls[0][0].Payload);
+      const sentPayload = JSON.parse(Buffer.from(invokeSpy.mock.calls[0][0].Payload).toString());
       expect(sentPayload.httpMethod).toEqual('GET');
       expect(sentPayload.path).toEqual('/test-results/getTestResultsByTesterStaffId');
       expect(sentPayload.queryStringParameters).toEqual(customParams);

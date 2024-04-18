@@ -15,7 +15,7 @@ jest.mock('../../src/services/ActivityService');
 
 describe('Cleanup Service', () => {
   afterEach(() => {
-    jest.resetModuleRegistry();
+    jest.resetModules();
     dateMock.restoreDateMock();
   });
 
