@@ -2,11 +2,13 @@ import { LambdaService } from './LambdaService';
 import { ActivityService } from './ActivityService';
 import { LambdaClient } from '@aws-sdk/client-lambda';
 import { TestResultsService } from './TestResultsService';
-import { IActivity, ILogVisit, ITestResult } from '../models';
+import { ILogVisit } from '../models';
 import { ACTIVITY_TYPE, HTTPRESPONSE, LOG_ACTIONS, LOG_REASONS, LOG_STATUS, TIMES } from '../utils/Enums';
 import { NotificationService } from './NotificationService';
-import HTTPResponse from '../models/HTTPResponse';
+import { ActivitySchema } from "@dvsa/cvs-type-definitions/types/v1/activity";
+import { TestResultSchema } from "@dvsa/cvs-type-definitions/types/v1/test";
 import { subHours } from 'date-fns';
+import HTTPResponse from '../models/HTTPResponse';
 import moment from 'moment';
 
 export class CleanupService {
@@ -30,10 +32,10 @@ export class CleanupService {
 
     try {
       // This goes to get all the open visits
-      const openVisits: IActivity[] = await this.activityService.getActivitiesList(ACTIVITY_TYPE.VISIT, '');
-      const actionVisits: IActivity[] = [];
-      let activities: IActivity[] = [];
-      let testResults: ITestResult[] = [];
+      const openVisits: ActivitySchema[] = await this.activityService.getActivitiesList(ACTIVITY_TYPE.VISIT, '');
+      const actionVisits: ActivitySchema[] = [];
+      let activities: ActivitySchema[] = [];
+      let testResults: TestResultSchema[] = [];
 
       // No open visits, log message, return and stop process
       if (openVisits.length === 0) {
@@ -46,7 +48,7 @@ export class CleanupService {
         if (moment(new Date(visit.startTime)).isAfter(recentActivityWindowTime)) {
           // Visit open less than 3 hours, no action needed
           this.addToLogVisits(
-            visit.id,
+            visit.id!,
             visit.testerStaffId,
             visit.startTime,
             visit.startTime,
@@ -98,9 +100,9 @@ export class CleanupService {
         if (moment(new Date(lastActionTime)).isBefore(terminationWindowTime)) {
           // last action time is more than 4 hours ago, close the visit
           try {
-            await this.activityService.endVisit(visit.id, lastActionTime);
+            await this.activityService.endVisit(visit.id!, lastActionTime);
             this.addToLogVisits(
-              visit.id,
+              visit.id!,
               visit.testerStaffId,
               visit.startTime,
               lastActionTime,
@@ -110,7 +112,7 @@ export class CleanupService {
             );
           } catch (e) {
             this.addToLogVisits(
-              visit.id,
+              visit.id!,
               visit.testerStaffId,
               visit.startTime,
               lastActionTime,
@@ -125,7 +127,7 @@ export class CleanupService {
           try {
             await this.notificationService.sendVisitExpiryNotification(visit);
             this.addToLogVisits(
-              visit.id,
+              visit.id!,
               visit.testerStaffId,
               visit.startTime,
               lastActionTime,
@@ -135,7 +137,7 @@ export class CleanupService {
             );
           } catch (e) {
             this.addToLogVisits(
-              visit.id,
+              visit.id!,
               visit.testerStaffId,
               visit.startTime,
               lastActionTime,
@@ -148,7 +150,7 @@ export class CleanupService {
         } else {
           // last action time under 3 hours, no action required
           this.addToLogVisits(
-            visit.id,
+            visit.id!,
             visit.testerStaffId,
             visit.startTime,
             lastActionTime,

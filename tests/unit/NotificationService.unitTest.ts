@@ -1,6 +1,8 @@
 import { NotificationService } from '../../src/services/NotificationService';
 import HTTPError from '../../src/models/HTTPError';
-import { IActivity } from '../../src/models';
+import { ActivitySchema } from "@dvsa/cvs-type-definitions/types/v1/activity";
+import { TestStationTypes } from "@dvsa/cvs-type-definitions/types/v1/enums/testStationType.enum";
+import { ActivityType } from "@dvsa/cvs-type-definitions/types/v1/enums/activityType.enum";
 
 describe('Notification Service', () => {
   afterEach(() => {
@@ -8,14 +10,18 @@ describe('Notification Service', () => {
     jest.restoreAllMocks();
   });
   describe('sendVisitExpiryNotifications', () => {
-    const visit: IActivity = {
+    const visit: ActivitySchema = {
       id: '123',
-      activityType: 'visit',
+      activityType: ActivityType.VISIT,
       testerName: 'Tester1',
       testerStaffId: '123456',
       testerEmail: 'test1@test.com',
       startTime: '2022-01-01T12:00:45.938Z',
       endTime: null,
+      testStationEmail: "some.name@dvsatest.co.uk",
+      testStationName: "Some Name",
+      testStationPNumber: "P123",
+      testStationType: TestStationTypes.ATF,
     };
     describe('when passed an array of UserDetails', () => {
       it('invokes sendNotification once per arrayItem, with correct Params', async () => {

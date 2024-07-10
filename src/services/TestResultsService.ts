@@ -1,10 +1,11 @@
-import { IInvokeConfig, ITestResult } from '../models';
+import { IInvokeConfig } from '../models';
 import { ServiceException } from '@smithy/smithy-client';
 import { InvocationRequest, InvokeCommandOutput } from '@aws-sdk/client-lambda';
 import { toUint8Array } from '@smithy/util-utf8';
 import { LambdaService } from './LambdaService';
 import { Configuration } from '../utils/Configuration';
 import { validateInvocationResponse } from '../utils/validateInvocationResponse';
+import { TestResultSchema } from "@dvsa/cvs-type-definitions/types/v1/test";
 
 class TestResultsService {
   private readonly lambdaClient: LambdaService;
@@ -23,7 +24,7 @@ class TestResultsService {
   public async getRecentTestResultsByTesterStaffId(
     testerStaffId: string,
     visitStartTime: string,
-  ): Promise<ITestResult[]> {
+  ): Promise<TestResultSchema[]> {
     const params = {
       testerStaffId,
       fromDateTime: visitStartTime,
@@ -36,7 +37,7 @@ class TestResultsService {
    * Invoke the Test Result service endpoint to get test results based on the provided parameters
    * @param params - getTestResultsByTesterStaffId query parameters
    */
-  async getTestResults(params: any): Promise<ITestResult[]> {
+  async getTestResults(params: any): Promise<TestResultSchema[]> {
     const config: IInvokeConfig = this.config.getInvokeConfig();
     const invokeParams: InvocationRequest = {
       FunctionName: config.functions.testResults.name,

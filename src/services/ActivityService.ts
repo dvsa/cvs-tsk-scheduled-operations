@@ -4,8 +4,9 @@ import { toUint8Array } from '@smithy/util-utf8';
 import { LambdaService } from './LambdaService';
 import { Configuration } from '../utils/Configuration';
 import { ACTIVITY_TYPE, ERRORS } from '../utils/Enums';
-import { IActivity, IActivityParams, IInvokeConfig } from '../models';
+import { IActivityParams, IInvokeConfig } from '../models';
 import { validateInvocationResponse } from '../utils/validateInvocationResponse';
+import { ActivitySchema } from "@dvsa/cvs-type-definitions/types/v1/activity";
 import HTTPError from '../models/HTTPError';
 
 class ActivityService {
@@ -27,7 +28,7 @@ class ActivityService {
     activityType: ACTIVITY_TYPE,
     visitStartTime: string,
     testerStaffId?: string,
-  ): Promise<IActivity[]> {
+  ): Promise<ActivitySchema[]> {
     const defaultStartTime: string = new Date(2020, 0, 1).toISOString();
     const today: string = new Date().toISOString();
     let params: IActivityParams;
@@ -57,7 +58,7 @@ class ActivityService {
    * Invoke the Activities service endpoint to get records based on the provided parameters
    * @param params - getActivities query parameters
    */
-  public async getActivities(params: IActivityParams): Promise<IActivity[]> {
+  public async getActivities(params: IActivityParams): Promise<ActivitySchema[]> {
     const config: IInvokeConfig = this.config.getInvokeConfig();
     const invokeParams: InvocationRequest = {
       FunctionName: config.functions.activities.name,
