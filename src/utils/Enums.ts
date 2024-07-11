@@ -38,9 +38,3 @@ export enum LOG_ACTIONS {
   NOTIFY = 'NOTIFY',
   CLOSE = 'CLOSE',
 }
-
-export enum ACTIVITY_TYPE {
-  VISIT = 'visit',
-  WAIT = 'wait',
-  UNACCOUNTABLE_TIME = 'unaccountable time',
-}

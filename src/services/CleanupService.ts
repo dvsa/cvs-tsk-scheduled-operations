@@ -3,10 +3,11 @@ import { ActivityService } from './ActivityService';
 import { LambdaClient } from '@aws-sdk/client-lambda';
 import { TestResultsService } from './TestResultsService';
 import { ILogVisit } from '../models';
-import { ACTIVITY_TYPE, HTTPRESPONSE, LOG_ACTIONS, LOG_REASONS, LOG_STATUS, TIMES } from '../utils/Enums';
+import { HTTPRESPONSE, LOG_ACTIONS, LOG_REASONS, LOG_STATUS, TIMES } from '../utils/Enums';
 import { NotificationService } from './NotificationService';
 import { ActivitySchema } from "@dvsa/cvs-type-definitions/types/v1/activity";
 import { TestResultSchema } from "@dvsa/cvs-type-definitions/types/v1/test";
+import { ActivityType } from "@dvsa/cvs-type-definitions/types/v1/enums/activityType.enum";
 import { subHours } from 'date-fns';
 import HTTPResponse from '../models/HTTPResponse';
 import moment from 'moment';
@@ -32,7 +33,7 @@ export class CleanupService {
 
     try {
       // This goes to get all the open visits
-      const openVisits: ActivitySchema[] = await this.activityService.getActivitiesList(ACTIVITY_TYPE.VISIT, '');
+      const openVisits: ActivitySchema[] = await this.activityService.getActivitiesList(ActivityType.VISIT, '');
       const actionVisits: ActivitySchema[] = [];
       let activities: ActivitySchema[] = [];
       let testResults: TestResultSchema[] = [];
@@ -75,9 +76,9 @@ export class CleanupService {
 
         // Get wait and unaccountable times for this visit
         activities = [
-          ...(await this.activityService.getActivitiesList(ACTIVITY_TYPE.WAIT, visit.startTime, visit.testerStaffId)),
+          ...(await this.activityService.getActivitiesList(ActivityType.WAIT, visit.startTime, visit.testerStaffId)),
           ...(await this.activityService.getActivitiesList(
-            ACTIVITY_TYPE.UNACCOUNTABLE_TIME,
+              ActivityType.UNACCOUNTABLE_TIME,
             visit.startTime,
             visit.testerStaffId,
           )),
