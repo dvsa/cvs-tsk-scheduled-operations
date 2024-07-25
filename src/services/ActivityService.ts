@@ -3,9 +3,11 @@ import { InvocationRequest, InvokeCommandOutput } from '@aws-sdk/client-lambda';
 import { toUint8Array } from '@smithy/util-utf8';
 import { LambdaService } from './LambdaService';
 import { Configuration } from '../utils/Configuration';
-import { ACTIVITY_TYPE, ERRORS } from '../utils/Enums';
-import { IActivity, IActivityParams, IInvokeConfig } from '../models';
+import { ERRORS } from '../utils/Enums';
+import { IActivityParams, IInvokeConfig } from '../models';
 import { validateInvocationResponse } from '../utils/validateInvocationResponse';
+import { ActivitySchema } from "@dvsa/cvs-type-definitions/types/v1/activity";
+import { ActivityType } from "@dvsa/cvs-type-definitions/types/v1/enums/activityType.enum";
 import HTTPError from '../models/HTTPError';
 
 class ActivityService {
@@ -24,16 +26,16 @@ class ActivityService {
    * @param testerStaffId Tester Staff Id
    */
   public async getActivitiesList(
-    activityType: ACTIVITY_TYPE,
+    activityType: ActivityType,
     visitStartTime: string,
     testerStaffId?: string,
-  ): Promise<IActivity[]> {
+  ): Promise<ActivitySchema[]> {
     const defaultStartTime: string = new Date(2020, 0, 1).toISOString();
     const today: string = new Date().toISOString();
     let params: IActivityParams;
 
     // Get all open visits, from 2020-01-01
-    if (activityType === ACTIVITY_TYPE.VISIT) {
+    if (activityType === ActivityType.VISIT) {
       params = {
         fromStartTime: defaultStartTime,
         toStartTime: today,
@@ -57,7 +59,7 @@ class ActivityService {
    * Invoke the Activities service endpoint to get records based on the provided parameters
    * @param params - getActivities query parameters
    */
-  public async getActivities(params: IActivityParams): Promise<IActivity[]> {
+  public async getActivities(params: IActivityParams): Promise<ActivitySchema[]> {
     const config: IInvokeConfig = this.config.getInvokeConfig();
     const invokeParams: InvocationRequest = {
       FunctionName: config.functions.activities.name,
@@ -77,7 +79,7 @@ class ActivityService {
       if (payload) {
         console.log(`After validation - ${params.activityType}: `, payload);
       } else {
-        params.activityType === ACTIVITY_TYPE.VISIT
+        params.activityType === ActivityType.VISIT
           ? console.log(`No ${params.activityType} activities returned`)
           : console.log(`No ${params.activityType} activities returned for tester staff id - ${params.testerStaffId}`);
       }

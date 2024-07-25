@@ -1,8 +1,8 @@
 import { TestResultsService } from '../../src/services/TestResultsService';
 import testResults from '../resources/testTestResults.json';
-import { ITestResult } from '../../src/models';
 import trResponse from '../resources/testResults-response.json';
 import { cloneDeep } from 'lodash';
+import {TestResultSchema} from "@dvsa/cvs-type-definitions/types/v1/test";
 
 describe('Test Results Service', () => {
   beforeEach(() => {
@@ -21,9 +21,9 @@ describe('Test Results Service', () => {
     describe('when all testers have recent results', () => {
       it('should call getTestResults once per staffId, with correct params, and return a list of recent test results for each testerId', async () => {
         const getTestResultsSpy = jest.spyOn(TestResultsService.prototype, 'getTestResults');
-        getTestResultsSpy.mockResolvedValue(testResults);
+        getTestResultsSpy.mockResolvedValue(testResults as TestResultSchema[]);
         const svc = new TestResultsService(new (jest.fn())());
-        const output: ITestResult[] = await svc.getRecentTestResultsByTesterStaffId('abc123', '');
+        const output: TestResultSchema[] = await svc.getRecentTestResultsByTesterStaffId('abc123', '');
         expect(getTestResultsSpy.mock.calls).toHaveLength(1);
         expect(getTestResultsSpy.mock.calls[0][0].testerStaffId).toEqual('abc123');
         expect(getTestResultsSpy.mock.calls[0][0].toDateTime.split('.')[0]).toEqual(
@@ -37,7 +37,7 @@ describe('Test Results Service', () => {
     });
     describe('when one or more testers do not have recent tests', () => {
       it('returns undefined for those users', async () => {
-        let output: ITestResult[];
+        let output: TestResultSchema[];
         const getTestResultsSpy = jest.spyOn(TestResultsService.prototype, 'getTestResults');
         // @ts-ignore
         getTestResultsSpy.mockResolvedValue(undefined);

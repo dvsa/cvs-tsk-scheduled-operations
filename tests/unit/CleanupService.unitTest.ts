@@ -4,12 +4,12 @@ import activities from '../resources/testActivities.json';
 import testResults from '../resources/testTestResults.json';
 import { TestResultsService } from '../../src/services/TestResultsService';
 import { cloneDeep } from 'lodash';
-import { IActivity } from '../../src/models';
 import dateMock from '../util/dateMockUtils';
 import { ERRORS, HTTPRESPONSE } from '../../src/utils/Enums';
 import { subMinutes } from 'date-fns';
 import { NotificationService } from '../../src/services/NotificationService';
 import HTTPError from '../../src/models/HTTPError';
+import {ActivitySchema} from "@dvsa/cvs-type-definitions/types/v1/activity";
 
 jest.mock('../../src/services/ActivityService');
 
@@ -34,7 +34,7 @@ describe('Cleanup Service', () => {
   describe('With a visit deserving of no action', () => {
     it("returns 200 ok, with 'nothing to do' message", async () => {
       expect.assertions(2);
-      const allActivities: IActivity[] = cloneDeep([activities[0]]);
+      const allActivities: ActivitySchema[] = cloneDeep([activities[0]] as ActivitySchema[]);
       const freshActivities = allActivities.map((a) => {
         a.startTime = new Date().toISOString();
         a.endTime = null;
@@ -50,7 +50,7 @@ describe('Cleanup Service', () => {
     it("returns 200 ok, with 'nothing to do' message after processing activities that required no action", async () => {
       jest.resetAllMocks();
       console.log = jest.fn();
-      const allActivities: IActivity[] = cloneDeep(activities);
+      const allActivities: ActivitySchema[] = cloneDeep(activities) as ActivitySchema[];
       allActivities[0].startTime = new Date(subMinutes(new Date(), 240)).toISOString();
       allActivities[3].endTime = null;
       allActivities[4].endTime = new Date(subMinutes(new Date(), 30)).toISOString();
@@ -78,7 +78,7 @@ describe('Cleanup Service', () => {
           sendVisitExpiryNotifications: sendNotifyMock,
         };
       });
-      const allActivities: IActivity[] = cloneDeep([activities[0]]);
+      const allActivities: ActivitySchema[] = cloneDeep([activities[0]] as ActivitySchema[]);
       const staleActivities = allActivities.map((a) => {
         a.endTime = null;
         return a;
@@ -105,7 +105,7 @@ describe('Cleanup Service', () => {
           sendVisitExpiryNotifications: sendNotifyMock,
         };
       });
-      const allActivities: IActivity[] = cloneDeep([activities[0]]);
+      const allActivities: ActivitySchema[] = cloneDeep([activities[0]] as ActivitySchema[]);
       const staleActivities = allActivities.map((a) => {
         a.endTime = null;
         return a;
@@ -130,7 +130,7 @@ describe('Cleanup Service', () => {
           sendVisitExpiryNotifications: sendNotifyMock,
         };
       });
-      const allActivities: IActivity[] = cloneDeep([activities[0]]);
+      const allActivities: ActivitySchema[] = cloneDeep([activities[0] as ActivitySchema]);
       const staleActivities = allActivities.map((a) => {
         a.endTime = null;
         return a;
@@ -155,7 +155,7 @@ describe('Cleanup Service', () => {
     it('correctly tries to send the notification', async () => {
       jest.resetAllMocks();
       console.log = jest.fn();
-      const allActivities: IActivity[] = cloneDeep(activities);
+      const allActivities: ActivitySchema[] = cloneDeep(activities) as ActivitySchema[];
       allActivities[3].startTime = new Date(subMinutes(new Date(), 240)).toISOString();
       allActivities[3].endTime = null;
       allActivities[4].endTime = new Date(subMinutes(new Date(), 210)).toISOString();
@@ -182,7 +182,7 @@ describe('Cleanup Service', () => {
           sendVisitExpiryNotifications: sendNotifyMock,
         };
       });
-      const allActivities: IActivity[] = cloneDeep(activities);
+      const allActivities: ActivitySchema[] = cloneDeep(activities) as ActivitySchema[];
       allActivities[3].startTime = new Date(subMinutes(new Date(), 240)).toISOString();
       allActivities[3].endTime = null;
       allActivities[4].endTime = new Date(subMinutes(new Date(), 210)).toISOString();

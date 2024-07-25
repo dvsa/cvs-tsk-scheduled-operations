@@ -5,7 +5,7 @@ import { wrapLambdaResponse } from '../util/responseUtils';
 import activitiesResponse from '../resources/activities-response.json';
 import testActivities from '../resources/testActivities.json';
 import dateMock from '../util/dateMockUtils';
-import { ACTIVITY_TYPE } from '../../src/utils/Enums';
+import { ActivityType } from "@dvsa/cvs-type-definitions/types/v1/enums/activityType.enum";
 
 describe('Activity Service', () => {
   afterEach(() => {
@@ -31,7 +31,7 @@ describe('Activity Service', () => {
       jest.spyOn(ActivityService.prototype, 'getActivities').mockImplementation(getActivitiesMock);
 
       const svc = new ActivityService(null as unknown as LambdaService);
-      await svc.getActivitiesList(ACTIVITY_TYPE.VISIT, expectedToStartTime);
+      await svc.getActivitiesList(ActivityType.VISIT, expectedToStartTime);
       expect(getActivitiesMock.mock.calls[0][0]).toEqual({
         fromStartTime: expectedTime,
         isOpen: true,
@@ -50,7 +50,7 @@ describe('Activity Service', () => {
       jest.spyOn(ActivityService.prototype, 'getActivities').mockImplementation(getActivitiesMock);
 
       const svc = new ActivityService(null as unknown as LambdaService);
-      await svc.getActivitiesList(ACTIVITY_TYPE.WAIT, expectedToStartTime, 'abc123');
+      await svc.getActivitiesList(ActivityType.WAIT, expectedToStartTime, 'abc123');
       expect(getActivitiesMock.mock.calls[0][0]).toEqual({
         fromStartTime: expectedToStartTime,
         isOpen: false,
