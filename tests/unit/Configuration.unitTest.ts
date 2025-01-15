@@ -2,9 +2,15 @@ import { IInvokeConfig } from '../../src/models';
 import { Configuration } from '../../src/utils/Configuration';
 import { ERRORS } from '../../src/utils/Enums';
 import mockConfig from '../util/mockConfig';
-jest.mock('aws-sdk/clients/secretsmanager');
+import { mockClient } from 'aws-sdk-client-mock';
+import {
+  GetSecretValueCommand,
+  SecretsManager,
+  GetSecretValueCommandOutput,
+} from '@aws-sdk/client-secrets-manager';
 
 describe('ConfigurationUtil', () => {
+  const smMock = mockClient(SecretsManager);
   mockConfig();
   console.log('here!?!?');
   const config: Configuration = Configuration.getInstance();
@@ -15,7 +21,7 @@ describe('ConfigurationUtil', () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
-    jest.resetModuleRegistry();
+    jest.resetModules();
   });
 
   describe('when calling getConfig() and config file is present', () => {
@@ -96,7 +102,6 @@ describe('ConfigurationUtil', () => {
   describe('setSecrets', () => {
     beforeEach(() => {
       jest.resetModules();
-      jest.resetModuleRegistry();
       jest.restoreAllMocks();
     });
     describe('with SECRET_NAME not set', () => {
@@ -113,22 +118,13 @@ describe('ConfigurationUtil', () => {
       describe('and secretsClient returns a value', () => {
         it('invokes the secretsClient with correct config, and returns a secret containing object', async () => {
           process.env.SECRET_NAME = 'aSecret';
-          const secretMock = jest.fn().mockImplementation(() => {
-            return {
-              getSecretValue: getSecretMock,
-            };
+          smMock.on(GetSecretValueCommand).resolves({
+            SecretString: JSON.stringify({ notify: { api_key: 'something' } }),
           });
-          // @ts-ignore
-          const getSecretMock = jest.fn().mockImplementation(() => {
-            return {
-              promise: jest.fn().mockResolvedValue({
-                SecretString: '{"notify": {"api_key": "something"}}',
-              }),
-            };
-          });
-          (config as any).secretsClient = new secretMock();
           const output = await (config as any).setSecrets();
-          expect(getSecretMock.mock.calls[0][0].SecretId).toEqual('aSecret');
+          const stub = smMock.commandCalls(GetSecretValueCommand);
+          expect(stub[0].args[0].input.SecretId).toEqual('aSecret');
+
           expect(output).toEqual({
             notify: {
               api_key: 'something',
@@ -140,18 +136,7 @@ describe('ConfigurationUtil', () => {
         it('throws an error', async () => {
           expect.assertions(1);
           process.env.SECRET_NAME = 'aSecret';
-          const secretMock = jest.fn().mockImplementation(() => {
-            return {
-              getSecretValue: getSecretMock,
-            };
-          });
-          // @ts-ignore
-          const getSecretMock = jest.fn().mockImplementation(() => {
-            return {
-              promise: jest.fn().mockResolvedValue(undefined),
-            };
-          });
-          (config as any).secretsClient = new secretMock();
+          smMock.on(GetSecretValueCommand).resolves(undefined as unknown as GetSecretValueCommandOutput);
           try {
             await (config as any).setSecrets();
           } catch (e) {

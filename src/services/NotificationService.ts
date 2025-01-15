@@ -1,7 +1,7 @@
 // @ts-ignore
 import { NotifyClient } from 'notifications-node-client';
-import { IActivity } from '../models';
 import { Configuration } from '../utils/Configuration';
+import { ActivitySchema } from "@dvsa/cvs-type-definitions/types/v1/activity";
 
 /**
  * Service class for Notifications
@@ -19,7 +19,7 @@ class NotificationService {
    * Send email to the tester with the details of the visit
    * @param visit
    */
-  async sendVisitExpiryNotification(visit: IActivity) {
+  async sendVisitExpiryNotification(visit: ActivitySchema) {
     const templateId: string = await this.config.getTemplateIdFromEV();
     return this.notifyClient.sendEmail(templateId, visit.testerEmail);
   }
