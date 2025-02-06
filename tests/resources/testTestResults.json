@@ -27,7 +27,8 @@
     "noOfAxles": 5,
     "testerEmailAddress": "test@test.com",
     "euVehicleCategory": "m1",
-    "deletionFlag": null
+    "deletionFlag": null,
+    "numberOfWheelsDriven": 4
   },
   {
     "testResultId": "abc124",
@@ -57,7 +58,8 @@
     "noOfAxles": 5,
     "testerEmailAddress": "test@test.com",
     "euVehicleCategory": "m1",
-    "deletionFlag": null
+    "deletionFlag": null,
+    "numberOfWheelsDriven": 4
   },
   {
     "testResultId": "abc125",
@@ -87,6 +89,7 @@
     "noOfAxles": 5,
     "testerEmailAddress": "test@test.com",
     "euVehicleCategory": "m1",
-    "deletionFlag": null
+    "deletionFlag": null,
+    "numberOfWheelsDriven": 4
   }
 ]

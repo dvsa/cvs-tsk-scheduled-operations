@@ -1,7 +1,10 @@
-// @ts-ignore
 import { Handler } from 'aws-lambda';
-import SecretsManager, { GetSecretValueRequest, GetSecretValueResponse } from 'aws-sdk/clients/secretsmanager';
-import * as AWSXray from 'aws-xray-sdk';
+import {
+  SecretsManager,
+  GetSecretValueCommandInput,
+  GetSecretValueCommandOutput,
+} from '@aws-sdk/client-secrets-manager';
+import AWSXRay from 'aws-xray-sdk';
 import { safeLoad } from 'js-yaml';
 import * as yml from 'node-yaml';
 import { IConfig, IFunctionEvent, IInvokeConfig, INotifyConfig, ISecretConfig } from '../models';
@@ -13,8 +16,11 @@ class Configuration {
   private secretsClient: SecretsManager;
 
   constructor(configPath: string) {
-    // @ts-ignore
-    this.secretsClient = AWSXray.captureAWSClient(new SecretsManager({ region: 'eu-west-1' }));
+    this.secretsClient = AWSXRay.captureAWSv3Client(
+      new SecretsManager({
+        region: 'eu-west-1',
+      }),
+    );
     this.config = yml.readSync(configPath);
     // Replace environment variable references
     let stringifiedConfig: string = JSON.stringify(this.config);
@@ -132,12 +138,12 @@ class Configuration {
   private async setSecrets(): Promise<ISecretConfig> {
     let secret: ISecretConfig;
     if (process.env.SECRET_NAME) {
-      const req: GetSecretValueRequest = {
+      const req: GetSecretValueCommandInput = {
         SecretId: process.env.SECRET_NAME,
       };
-      const resp: GetSecretValueResponse = await this.secretsClient.getSecretValue(req).promise();
+      const resp: GetSecretValueCommandOutput = await this.secretsClient.getSecretValue(req);
       try {
-        secret = (await safeLoad(resp.SecretString as string)) as ISecretConfig;
+        secret = safeLoad(resp.SecretString as string) as ISecretConfig;
       } catch (e) {
         throw new Error(ERRORS.SECRET_STRING_EMPTY);
       }
