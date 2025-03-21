@@ -18,7 +18,7 @@ invoke:
         name: cvs-svc-test-results
         mock: tests/resources/test-results-200-response.json
       activities:
-        name: cvs-svc-activities
+        name: cvs-test-facility-service
         mock: tests/resources/activities-response.json
   remote:
     params:
@@ -27,7 +27,7 @@ invoke:
       testResults:
         name: test-results-${BRANCH}
       activities:
-        name: activities-${BRANCH}
+        name: cvs-test-facility-service-${BRANCH}
 notify:
   api_key:
   templateId: 2af4ff8e-af5b-4f32-80a9-d03719180647
