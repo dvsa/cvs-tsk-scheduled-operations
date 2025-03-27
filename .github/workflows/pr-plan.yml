@@ -1,10 +1,10 @@
 name: PR-checks
 
 on:
- push:
-   branches: ['develop']
- pull_request:
-   branches: ['develop']
+  push:
+    branches: ['develop']
+  pull_request:
+    branches: ['develop']
 
 jobs:
   scanner:
@@ -31,10 +31,10 @@ jobs:
         run: npm ci
       - name: Run SonarQube scanner
         run: |
-         npm run test && \
-         npm run sonar-scanner -- \
-         -Dsonar.host.url=${{ env.SONARQUBE_GHA_URL }} \
-         -Dsonar.token=${{ env.SONARQUBE_GHA_TOKEN }} \
-         -Dsonar.login=${{ env.SONARQUBE_GHA_TOKEN }} \
-         -Dsonar.projectName=${{ github.repository }} \
-         -Dsonar.projectVersion=1.0.${{ github.run_id }}
+          npm run test && \
+          npm run sonar-scanner -- \
+          -Dsonar.host.url=${{ env.SONARQUBE_GHA_URL }} \
+          -Dsonar.token=${{ env.SONARQUBE_GHA_TOKEN }} \
+          -Dsonar.login=${{ env.SONARQUBE_GHA_TOKEN }} \
+          -Dsonar.projectName=${{ github.repository }} \
+          -Dsonar.projectVersion=1.0.${{ github.run_id }}
